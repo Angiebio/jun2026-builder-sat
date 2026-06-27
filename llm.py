@@ -19,6 +19,22 @@ from pathlib import Path
 
 import httpx
 
+
+def _load_dotenv() -> None:
+    """Load this project's .env (if present) into the environment — no dependency.
+    Makes `--live` work after `cp .env.example .env` without exporting vars by hand."""
+    p = Path(__file__).parent / ".env"
+    if not p.exists():
+        return
+    for raw in p.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if line and not line.startswith("#") and "=" in line:
+            key, _, val = line.partition("=")
+            os.environ.setdefault(key.strip(), val.strip().strip('"').strip("'"))
+
+
+_load_dotenv()
+
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 GRANITE_MODEL = os.getenv("OLLAMA_MODEL", "granite4:micro")
 ANTHROPIC_KEY = os.getenv("ANTHROPIC_API_KEY", "")
