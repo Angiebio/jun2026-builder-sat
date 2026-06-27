@@ -26,8 +26,8 @@ uv sync
 uv run python orchestrator.py pinwheel          # cases: pinwheel | punched_cards | ti_82 | nokia_3590
 
 # validate the two skills against the agentskills.io spec:
-uv run agentskills validate ./skills/antique-power-math
-uv run agentskills validate ./skills/trcl-field-guide-writer
+uv run python -m skills_ref.cli validate ./skills/antique-power-math
+uv run python -m skills_ref.cli validate ./skills/trcl-field-guide-writer
 
 # the eval delta (the whole point — skill vs no-skill):
 uv run python -m evals
