@@ -1,6 +1,6 @@
 ---
 name: trcl-field-guide-writer
-description: "Write a TRCL Antique Infernal Engine field-guide page from frozen artifact and math data. Use when turning artifact observations plus computed power or compute math into the final article page. Enforces a fixed section template and house voice. Triggers: field-guide page, Can it Run AI article, TRCL voice, antique writeup, potato verdict."
+description: "Write a TRCL Antiques Inference Engine field-guide page from frozen artifact and math data. Use when turning artifact observations plus computed power or compute math into the final article page. Enforces a fixed section template and house voice. Triggers: field-guide page, Can it Run AI article, TRCL voice, antique writeup, potato verdict."
 ---
 
 # trcl-field-guide-writer

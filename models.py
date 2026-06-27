@@ -1,4 +1,4 @@
-# models.py — Pydantic interfaces for the Antique Infernal Engine
+# models.py — Pydantic interfaces for the Antiques Inference Engine
 # Date: 27JUN2026
 # Version: 1.0
 # Technical: Defines strictly-typed schemas for data exchange between agents.

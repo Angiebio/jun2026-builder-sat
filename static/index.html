@@ -3,10 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Antique Infernal Engine — Can It Run AI?</title>
+<title>Antiques Inference Engine · Can It Run AI?</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 <style>
 /* ───────────────────────────────────────────────────────────────────────────
-   The Real Cat AI — Antique Infernal Engine.
+   The Real Cat AI — Antiques Inference Engine.
    DESIGN LANGUAGE: technical schematic / engineering field-guide.
    Geometric, not soft: sharp 0px corners, hairline rules, L-bracket corner
    accents, numbered specimen tiles that INVERT when active. No "rounded box
@@ -63,7 +64,8 @@ body{
 .navwrap{max-width:1180px; margin:0 auto; padding:.5rem clamp(1rem,4vw,2.5rem);
   display:flex; align-items:center; justify-content:space-between; gap:1rem}
 .navwrap .brand{font-family:var(--display); font-weight:600; font-size:1rem; color:var(--purple-700);
-  letter-spacing:-.01em; text-decoration:none; white-space:nowrap}
+  letter-spacing:-.01em; text-decoration:none; white-space:nowrap; display:inline-flex; align-items:center; gap:.5rem}
+.navwrap .brand svg.bmk{flex:none; display:block}
 .navlinks{display:flex; align-items:center; gap:.15rem; flex-wrap:wrap; justify-content:flex-end}
 .navlinks a{font-family:var(--mono); font-size:.72rem; letter-spacing:.07em; text-transform:uppercase;
   color:var(--ink-soft); text-decoration:none; padding:.4rem .6rem; transition:color .14s linear, background .14s linear}
@@ -73,6 +75,8 @@ body{
   margin-right:.45rem; vertical-align:middle}        /* solid lime block, not a stripe */
 .navlinks a.ext::after{content:" ↗"; color:var(--lime-600)}
 @media (max-width:600px){ .navwrap .brand .full{display:none} .navlinks a{padding:.4rem .45rem} }
+/* nav anchors clear the sticky nav so jumped-to headers aren't hidden under it */
+#engine, #brief, #architecture, #book{scroll-margin-top:4.5rem}
 
 /* ── concept brief: the required 1-pager, front-and-center, engineering-schematic ── */
 .brief{padding:clamp(1.9rem,4vw,2.9rem) 0; border-bottom:2px solid var(--rule); scroll-margin-top:4rem}
@@ -88,6 +92,8 @@ body{
 .brief .bgrid{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.05fr); gap:clamp(1.4rem,3vw,2.4rem); align-items:start}
 @media (max-width:820px){ .brief .bgrid{grid-template-columns:1fr} }
 .brief .lead{font-size:1.1rem; margin:0 0 1rem; max-width:60ch}
+.brief .roadshow{font-size:1rem; color:var(--ink-soft); margin:0 0 1.1rem; max-width:60ch;
+  padding-left:.9rem; border-left:2px solid var(--lime-500)}
 .brief .brow{display:grid; grid-template-columns:auto 1fr; gap:.55rem .9rem; margin:0; font-size:.93rem; line-height:1.5}
 .brief .brow .bk{font-family:var(--mono); font-size:.68rem; letter-spacing:.05em; text-transform:uppercase;
   color:var(--lime-600); padding-top:.2rem; white-space:nowrap}
@@ -257,6 +263,16 @@ body{
 .ll-steps li.active .mark{background:var(--lime-500); color:var(--purple-950); border-color:var(--lime-500)}
 .ll-steps li.done{color:var(--ink-soft)}
 .ll-steps li.done .mark{background:var(--purple-700); color:var(--cream); border-color:var(--purple-700)}
+/* ── loader, a little more alive: rotating quips, a pulsing active mark, a blinking cursor ── */
+.ll-quip{font-family:var(--mono); font-size:.82rem; color:var(--lime-600); margin:0 0 1rem; min-height:1.2em; transition:opacity .22s ease}
+.ll-steps li.active .mark{animation:llpulse 1.05s ease-in-out infinite}
+@keyframes llpulse{0%,100%{box-shadow:0 0 0 0 oklch(0.68 0.19 135 / .55)} 50%{box-shadow:0 0 0 5px oklch(0.68 0.19 135 / 0)}}
+.ll-steps li.active .ll-line::after{content:"▍"; color:var(--lime-600); margin-left:.15rem; animation:llblink 1s steps(1,end) infinite}
+@keyframes llblink{50%{opacity:0}}
+@media (prefers-reduced-motion: reduce){
+  .ll-steps li.active .mark{animation:none}
+  .ll-steps li.active .ll-line::after{content:""; animation:none}
+}
 
 /* ── rendered field-guide article ── */
 .article{background:var(--paper); border:1px solid var(--border); padding:clamp(1.4rem,3vw,2.2rem);
@@ -319,7 +335,7 @@ footer code{font-family:var(--mono); background:var(--cream-2); border:1px solid
 
 <nav class="topnav" aria-label="Primary">
   <div class="navwrap">
-    <a class="brand" href="#top">🥔🔥 <span class="full">Antique Infernal Engine</span></a>
+    <a class="brand" href="#top"><svg class="bmk" width="21" height="21" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.6 8.1C5.9 9 4.3 11.9 4.9 14.8c.6 3 3.8 5 7.3 4.7 3.7-.3 6.9-2.7 7-6 .1-3-2.5-5.4-5.9-5.4-1.6 0-3.2.4-4.7 1z" fill="#4a0873"/><path d="M12.7 7.4c-.5-2-1.9-3.2-3.7-3.2 1.1 1.4 1.6 2.7 2 3.7z" fill="#5bb545"/><circle cx="10.4" cy="12.7" r=".95" fill="#cbb4e2"/><circle cx="14.2" cy="11.8" r=".8" fill="#cbb4e2"/></svg><span class="full">Antiques Inference Engine</span></a>
     <div class="navlinks">
       <a class="req" href="#brief">Concept Brief</a>
       <a href="#architecture">Architecture</a>
@@ -331,11 +347,45 @@ footer code{font-family:var(--mono); background:var(--cream-2); border:1px solid
 </nav>
 
 <div class="wrap" id="top">
+  <!-- HERO (Flame, 27JUN2026): Jim's illustration floated SMALL to the right of the title. -->
+  <style>
+  .masthead{overflow:hidden}                /* contain the right-floated hero; bottom rule clears it */
+  .hero{float:right; width:clamp(190px, 30%, 330px); margin:.25rem 0 .9rem 1.6rem;
+    border:1px solid var(--rule); background:var(--paper); box-shadow:var(--shadow);
+    position:relative; line-height:0}
+  .hero img{width:100%; height:auto; display:block}
+  .hero::before,.hero::after{content:""; position:absolute; width:13px; height:13px; pointer-events:none; z-index:2}
+  .hero::before{top:7px; left:7px; border-top:2px solid var(--lime-500); border-left:2px solid var(--lime-500)}
+  .hero::after{bottom:7px; right:7px; border-bottom:2px solid var(--lime-500); border-right:2px solid var(--lime-500)}
+  @media (max-width:680px){ .hero{float:none; width:100%; margin:1.1rem 0 0} }
+  </style>
   <header class="masthead">
+    <figure class="hero" aria-label="The Antiques Inference Engine, illustrated">
+      <img src="/static/hero-infernal-engine.jpg" width="1024" height="559"
+           alt="A steampunk infernal engine wired to a pile of potatoes, attended by the Reality Badger with a magnifying glass and a goblin with a tablet — the absurd-but-rigorous machine that computes whether an antique can run AI.">
+    </figure>
     <p class="kicker">The Real Cat AI Labs · 100 Ways to Power AI</p>
-    <h1>The Antique Infernal&nbsp;Engine<em>.</em></h1>
-    <p class="spine">The humor is decorative. <b>The math is structural.</b></p>
+    <h1>The Antiques Inference&nbsp;Engine<em>.</em></h1>
+    <p class="spine">Building <b>Structurally Unprofitable AI</b> (Because Digital Literacy is the Point)</p>
   </header>
+
+  <main class="layout" id="engine">
+    <aside class="rail">
+      <h2>The Specimens <span class="count" id="case-count"></span></h2>
+      <ol id="case-list"><li class="spec-row" style="padding:.7rem;color:var(--ink-soft);font-size:.85rem">loading…</li></ol>
+
+      <div class="uploader" id="uploader">
+        <label class="upload-btn" id="upload-btn" for="file-input">
+          <span class="plus" aria-hidden="true">+</span> Add a specimen
+        </label>
+        <input id="file-input" type="file" accept="image/*" hidden>
+        <p class="upload-hint">Upload any photo — an heirloom, a snack, your phone. Claude <em>actually looks</em>; granite researches; the physics is computed live. ~60–90s.</p>
+      </div>
+
+      <p class="arc-note">Each antique, asked the least efficient question in history: <em>could it run AI?</em> Answered with real physics.</p>
+    </aside>
+    <section class="page" id="page" aria-live="polite"></section>
+  </main>
 
   <section id="brief" class="brief">
     <div class="bhead">
@@ -347,12 +397,14 @@ footer code{font-family:var(--mono); background:var(--cream-2); border:1px solid
     </div>
     <div class="bgrid">
       <div class="prose">
-        <p class="lead"><strong>Antique Infernal Engine</strong> takes the least efficient question in history — <em>could this antique run AI?</em> — and answers it rigorously. Hand it a photo and five cooperating agents produce one TRCL field-guide page: what the object is, whether it can <em>make power</em> or <em>do compute</em>, and how many potato batteries (or centuries) it would take to reach a single &ldquo;AI hello.&rdquo; It is Angie&rsquo;s book <em>100 Ways to Power Artificial Intelligence</em>, turned into a working agent.</p>
+        <p class="lead"><strong>Antiques Inference Engine</strong> asks the least efficient question in history. <em>Could this antique run AI?</em> Then it actually does the math. Hand it a photo and five agents work together to write one TRCL field-guide page. They work out what the object is, whether it can <em>make power</em> or <em>do compute</em>, and how many potato batteries (or centuries) it would take to reach a single &ldquo;AI hello.&rdquo; It&rsquo;s Angie&rsquo;s book <em>100 Ways to Power Artificial Intelligence</em>, built into a working agent.</p>
+        <p class="roadshow">Think of it as <em>Antiques Roadshow</em> for the AI age. Same dramatic appraisal of some dusty heirloom, except instead of &ldquo;what&rsquo;s it worth?&rdquo; the expert squints and asks &ldquo;could it run a neural network?&rdquo;</p>
         <div class="brow">
-          <span class="bk">Lane</span><span>Lane 3 &mdash; most innovative use of multiple agents + skills.</span>
-          <span class="bk">Innovation</span><span>The load-bearing part &mdash; the physics &mdash; is <strong>deterministic</strong>, so correctness needs no model. Five agents and two skills cooperate through a <strong>bounded adjudication loop</strong>: the Reality Badger verifies the math and kicks work back to an earlier agent (<code>route_to</code>), visible in <code>trace.json</code>.</span>
-          <span class="bk">The gate</span><span>Granite classifies and verifies; frontier sees and writes; <strong>Python calculates</strong>. The default <strong>FLOOR</strong> runs fully local, zero keys; <code>--live</code> overlays Claude + granite only for senses and voice.</span>
-          <span class="bk">Proof</span><span>With the math skill every assertion passes; granite-alone fails them all. The skill doesn&rsquo;t make the prose nicer &mdash; it makes the math <strong>true</strong>.</span>
+          <span class="bk">Lane</span><span>Lane 3, most innovative use of multiple agents and skills.</span>
+          <span class="bk">The skills</span><span>Two custom skills don&rsquo;t add a feature, they add <strong>discipline</strong>. One tells the model to stop doing arithmetic and hand the numbers to a Python script, so the math is right every time. The other owns the voice and is forbidden from touching the math. That&rsquo;s what makes a small local model trustworthy.</span>
+          <span class="bk">The loop</span><span>The hard part is the physics, and that part is <strong>deterministic</strong>, so getting it right needs no model at all. Five agents work in a bounded loop, and the Reality Badger can hand work back to an earlier agent (<code>route_to</code>). You can watch the whole thing happen in <code>trace.json</code>.</span>
+          <span class="bk">The gate</span><span>Granite classifies and verifies, the frontier models see and write, and <strong>Python does the calculating</strong>. By default it runs fully local with zero keys. Flip on <code>--live</code> and Claude plus granite step in, but only for the seeing and the writing.</span>
+          <span class="bk">Proof</span><span>With the skills, every assertion passes. Without them, a granite model on its own fails all four. The skills don&rsquo;t make the writing prettier, they make the math <strong>actually true</strong>.</span>
         </div>
         <div class="proof">
           <div class="p win"><span class="k">with skill</span><span class="v">24 / 24</span></div>
@@ -362,7 +414,7 @@ footer code{font-family:var(--mono); background:var(--cream-2); border:1px solid
       </div>
       <figure class="fig bracketed" id="architecture">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 550" role="img" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
-  <title>Antique Infernal Engine — architecture (adjudication loop)</title>
+  <title>Antiques Inference Engine architecture (adjudication loop)</title>
   <desc>A photo of an antique flows through five cooperating agents. The Reality Badger verifies the math and returns route_to; the orchestrator adjudicates and re-dispatches up to two times back to the Artifact Goblin or Sherlock Ohms. Color encodes which model runs each step on the live profile: orange frontier Claude, purple local Granite, green Python.</desc>
   <defs>
     <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -373,7 +425,7 @@ footer code{font-family:var(--mono); background:var(--cream-2); border:1px solid
     </marker>
   </defs>
   <rect x="0.5" y="0.5" width="679" height="549" rx="16" fill="#fafaf5" stroke="#E2D6EC" stroke-width="1"/>
-  <text x="40" y="50" font-size="22" font-weight="700" fill="#4a0873">Antique Infernal Engine</text>
+  <text x="40" y="50" font-size="22" font-weight="700" fill="#4a0873">Antiques Inference Engine</text>
   <rect x="40" y="58" width="176" height="4" rx="2" fill="#5bb545"/>
   <text x="40" y="80" font-size="13" fill="#6e4a92">therealcat.ai &#183; a TRCL field-guide generator &#183; can this antique run AI?</text>
   <text x="40" y="100" font-size="13" font-style="italic" fill="#3a7a2a">The humor is decorative. The math is structural.</text>
@@ -459,24 +511,6 @@ footer code{font-family:var(--mono); background:var(--cream-2); border:1px solid
     </div>
   </section>
 
-  <main class="layout" id="engine">
-    <aside class="rail">
-      <h2>The Specimens <span class="count" id="case-count"></span></h2>
-      <ol id="case-list"><li class="spec-row" style="padding:.7rem;color:var(--ink-soft);font-size:.85rem">loading…</li></ol>
-
-      <div class="uploader" id="uploader">
-        <label class="upload-btn" id="upload-btn" for="file-input">
-          <span class="plus" aria-hidden="true">+</span> Add a specimen
-        </label>
-        <input id="file-input" type="file" accept="image/*" hidden>
-        <p class="upload-hint">Upload any photo — an heirloom, a snack, your phone. Claude <em>actually looks</em>; granite researches; the physics is computed live. ~60–90s.</p>
-      </div>
-
-      <p class="arc-note">Each antique, asked the least efficient question in history: <em>could it run AI?</em> Answered with real physics.</p>
-    </aside>
-    <section class="page" id="page" aria-live="polite"></section>
-  </main>
-
   <section id="book" class="book">
     <div class="bgrid2">
       <figure class="cover">
@@ -486,18 +520,18 @@ footer code{font-family:var(--mono); background:var(--cream-2); border:1px solid
       </figure>
       <div class="btext">
         <p class="label">The book behind the engine</p>
-        <h2>Why a potato? Because the math is real &mdash; and that&rsquo;s the lesson.</h2>
-        <p>This engine is Angie&rsquo;s book <em>100 Ways to Power Artificial Intelligence &mdash; A Mathematically Rigorous Guide to Computationally Absurd Inference</em>, turned into a working agent. The book asks one honest question of a hundred ridiculous power sources &mdash; potatoes, cat static, hamster wheels, the heat death of the universe &mdash; and does the real arithmetic every time. <strong>The math is real. The sources are peer-reviewed. The premise is absolutely not.</strong></p>
-        <p>That&rsquo;s also why it <em>teaches</em>. Most people never see the <em>material</em> reality of AI &mdash; that one &ldquo;hello&rdquo; is 14 billion operations, that power and compute and access are physical, finite, and political. Pricing a model&rsquo;s appetite in <strong>potato batteries</strong> and <strong>pedaling cyclists</strong> makes that legible to anyone, with no machine-learning background required. The absurdity is the on-ramp; the digital literacy is the payload. The Real Cat Labs builds these to bridge AI research and public understanding.</p>
+        <h2>Why a potato? Because the math is real, and that&rsquo;s the lesson.</h2>
+        <p>This engine is Angie&rsquo;s book <em>100 Ways to Power Artificial Intelligence</em> (<em>A Mathematically Rigorous Guide to Computationally Absurd Inference</em>), built into a working agent. The book takes a hundred ridiculous power sources, like potatoes, cat static, hamster wheels, even the heat death of the universe, and asks one honest question of each. Then it does the real arithmetic every time. <strong>The math is real. The sources are peer-reviewed. The premise is absolutely not.</strong></p>
+        <p>That&rsquo;s also what makes it <em>teach</em>. Most people never get to see the <em>material</em> reality of AI. One &ldquo;hello&rdquo; is 14 billion operations. Power and compute and access are physical, finite, and political. Putting a model&rsquo;s appetite in terms of <strong>potato batteries</strong> and <strong>pedaling cyclists</strong> makes all of that click for anyone, with no machine-learning background needed. The silliness is the way in, and the digital literacy is what you leave with. The Real Cat Labs makes things like this to close the gap between AI research and the rest of us.</p>
         <a class="read" href="https://therealcat.ai/book/" target="_blank" rel="noopener">Read the book at therealcat.ai</a>
       </div>
     </div>
-    <p class="qlabel">What the models said &mdash; AIs reviewing a book about powering AIs:</p>
+    <p class="qlabel">What the models said about the book (AIs reviewing a book about powering AIs)</p>
     <div class="quotes">
       <blockquote class="q"><p>&ldquo;&hellip;the thing that makes it work is that it&rsquo;s simultaneously stupid and profound.&rdquo;</p><span class="who">Claude &middot; Anthropic</span></blockquote>
       <blockquote class="q"><p>&ldquo;It&rsquo;s a Trojan Horse for Digital Literacy.&rdquo;</p><span class="who">Gemini &middot; Google</span></blockquote>
       <blockquote class="q"><p>&ldquo;&hellip;the love child of a serious PhD thesis and a late-night shitpost that somehow got typeset in LaTeX. I&rsquo;m obsessed.&rdquo;</p><span class="who">Grok &middot; xAI</span></blockquote>
-      <blockquote class="q"><p>&ldquo;Power, compute, infrastructure, and access are all political and material &mdash; and the distance between absurdity and viability is much smaller than industry mythology wants people to think.&rdquo;</p><span class="who">ChatGPT &middot; OpenAI</span></blockquote>
+      <blockquote class="q"><p>&ldquo;Power, compute, infrastructure, and access are all political and material. The distance between absurdity and viability is much smaller than industry mythology wants people to think.&rdquo;</p><span class="who">ChatGPT &middot; OpenAI</span></blockquote>
     </div>
   </section>
 

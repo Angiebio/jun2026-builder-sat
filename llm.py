@@ -78,7 +78,13 @@ def claude(prompt: str, system: str | None = None, image_path: str | None = None
     content: list = [{"type": "text", "text": prompt}]
     if image_path:
         raw = Path(image_path).read_bytes()
-        media = "image/jpeg" if str(image_path).lower().endswith((".jpg", ".jpeg")) else "image/png"
+        ext = str(image_path).lower()
+        # Anthropic accepts jpeg/png/gif/webp — match the bytes, don't blanket-guess png
+        # (a .webp sent as image/png 400s the API → silent fallback, no real vision).
+        media = ("image/jpeg" if ext.endswith((".jpg", ".jpeg"))
+                 else "image/webp" if ext.endswith(".webp")
+                 else "image/gif" if ext.endswith(".gif")
+                 else "image/png")
         content = [
             {"type": "image", "source": {"type": "base64", "media_type": media,
                                           "data": base64.b64encode(raw).decode()}},

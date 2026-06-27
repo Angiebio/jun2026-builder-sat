@@ -1,4 +1,4 @@
-# 🥔 Antique Infernal Engine — Field Guide
+# 🥔 Antiques Inference Engine — Field Guide
 
 ## IBM 80-column punched cards (FORTRAN program deck)
 *80-column rectangular-hole format introduced 1928; this FORTRAN deck ~1960s-1970s · path: `punched_card_parallel_binary` · confidence 85%*

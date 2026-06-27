@@ -1,4 +1,4 @@
-# 🥔 Antique Infernal Engine — Field Guide
+# 🥔 Antiques Inference Engine — Field Guide
 
 ## Nokia candybar mobile phone (AT&T branded, monochrome) -- likely Nokia 3590
 *~2002 (Nokia 3590; AT&T/Cingular, FCC-approved April 2002) · path: `silicon_microprocessor_compute` · confidence 60%*

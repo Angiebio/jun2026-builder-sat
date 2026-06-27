@@ -1,4 +1,4 @@
-# 🥔 Antique Infernal Engine — Field Guide
+# 🥔 Antiques Inference Engine — Field Guide
 
 ## Texas Instruments TI-82 graphing calculator
 *introduced 1993 · path: `silicon_microprocessor_compute` · confidence 90%*

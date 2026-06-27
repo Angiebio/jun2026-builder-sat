@@ -63,7 +63,7 @@
         "source": "ollama_no_skill_baseline",
         "model": "granite4:micro",
         "provider": "local-ollama",
-        "latency_ms": 24669,
+        "latency_ms": 23535,
         "tokens": 610,
         "reason": null,
         "assertions": {
@@ -73,7 +73,7 @@
         "total": 1,
         "math": {
           "time_seconds": 17.0,
-          "time_years": 5.7e-09,
+          "time_years": 5.6e-08,
           "units_for_ai_hello": 0.0
         }
       }
@@ -117,8 +117,8 @@
         "source": "ollama_no_skill_baseline",
         "model": "granite4:micro",
         "provider": "local-ollama",
-        "latency_ms": 18824,
-        "tokens": 586,
+        "latency_ms": 20624,
+        "tokens": 580,
         "reason": null,
         "assertions": {
           "math_matches_expected": false
@@ -126,8 +126,8 @@
         "passed": 0,
         "total": 1,
         "math": {
-          "time_seconds": 1.0,
-          "time_years": 31536000.0,
+          "time_seconds": 0.0,
+          "time_years": 0.0,
           "units_for_ai_hello": 0.0
         }
       }
@@ -172,8 +172,8 @@
         "source": "ollama_no_skill_baseline",
         "model": "granite4:micro",
         "provider": "local-ollama",
-        "latency_ms": 35639,
-        "tokens": 713,
+        "latency_ms": 18575,
+        "tokens": 563,
         "reason": null,
         "assertions": {
           "math_matches_expected": false
@@ -181,8 +181,8 @@
         "passed": 0,
         "total": 1,
         "math": {
-          "time_seconds": 0.0,
-          "time_years": 0.0,
+          "time_seconds": 1.0,
+          "time_years": 3.17e-07,
           "units_for_ai_hello": 0.0
         }
       }
@@ -227,8 +227,8 @@
         "source": "ollama_no_skill_baseline",
         "model": "granite4:micro",
         "provider": "local-ollama",
-        "latency_ms": 27587,
-        "tokens": 716,
+        "latency_ms": 20688,
+        "tokens": 634,
         "reason": null,
         "assertions": {
           "math_matches_expected": false

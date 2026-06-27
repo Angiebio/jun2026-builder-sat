@@ -1,4 +1,4 @@
-# ADLC Worksheet — Antique Infernal Engine
+# ADLC Worksheet — Antiques Inference Engine
 *One page per phase. Filled during the build; graded (20 pts).*
 
 > **Two honest profiles.** **FLOOR** (default): deterministic, **model-free for

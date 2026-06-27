@@ -1,4 +1,4 @@
-<!-- TRCL Antique Infernal Engine — field-guide page template.
+<!-- TRCL Antiques Inference Engine — field-guide page template.
      Fill EVERY {{slot}} from the frozen ArtifactObservation / ResearchNotes / MathResult.
      The writer copies numbers; it never computes them. Render -1.0 / non-finite / "never"
      as "Never (infinity)". Keep prose within 1% of the frozen JSON values. -->
@@ -58,4 +58,4 @@
 <!-- a TRCL-style image prompt: the artifact reimagined as a soot-faced AI engine -->
 
 ---
-<sub>Antique Infernal Engine · The Real Cat AI Labs · the humor is decorative, the math is structural.</sub>
+<sub>Antiques Inference Engine · The Real Cat AI Labs · the humor is decorative, the math is structural.</sub>

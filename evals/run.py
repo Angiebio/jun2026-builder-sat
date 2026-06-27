@@ -1,4 +1,4 @@
-"""Eval runner for Antique Infernal Engine.
+"""Eval runner for Antiques Inference Engine.
 
 Runs canonical fixtures through the deterministic with-skill pipeline and a
 no-skill baseline, then writes evals/benchmark.json.
@@ -352,7 +352,7 @@ def run(cases: list[str], no_skill_only: bool = False, profile: str = "floor") -
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Run Antique Infernal Engine evals.")
+    parser = argparse.ArgumentParser(description="Run Antiques Inference Engine evals.")
     parser.add_argument("--case", action="append", choices=sorted(EXPECTED), help="Run one case; repeatable.")
     parser.add_argument("--no-skill-only", action="store_true", help="Only run the no-skill baseline.")
     parser.add_argument(

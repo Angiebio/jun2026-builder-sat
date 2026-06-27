@@ -1,4 +1,4 @@
-/* Antique Infernal Engine — single-page UI logic. Vanilla JS, fully offline.
+/* Antiques Inference Engine — single-page UI logic. Vanilla JS, fully offline.
    Renders the field-guide page + the purple "Can it Run AI?" panel + the
    "open the potato ledger" trace from runs/<case>/ artifacts — and lets the
    visitor UPLOAD a photo to watch the live pipeline (Claude + granite) run. */
@@ -134,6 +134,11 @@ function receiptChips(s) {
   return out.length ? `<span class="rcpts">${out.join("")}</span>` : "";
 }
 
+/* ── agent display name: drop underscores, Title Case (artifact_goblin → Artifact Goblin) ── */
+function prettyAgent(name) {
+  return String(name).replace(/_/g, " ").replace(/\b([a-z])/g, (_, c) => c.toUpperCase());
+}
+
 /* ── render the trace ledger from trace.json ── */
 function ledger(trace) {
   const steps = (trace && trace.steps) || [];
@@ -142,7 +147,7 @@ function ledger(trace) {
     const model = s.model || "—";
     const cls = (model === "deterministic" || model === "fixture") ? " deterministic" : "";
     const passBit = ("pass" in s) ? (s.pass ? " ✓ pass" : " ✗ fail") : "";
-    return `<div class="step"><span class="agent">${esc(s.agent || "")}</span>
+    return `<div class="step"><span class="agent">${esc(prettyAgent(s.agent || ""))}</span>
       <span class="detail">${esc(detail)}${passBit}${receiptChips(s)}</span>
       <span class="model${cls}">${esc(model)}</span></div>`;
   }).join("");
@@ -186,16 +191,29 @@ const LIVE_STEPS = [
   ["04", "reality_badger", "granite audits the units — can it be bullied into AI?"],
   ["05", "page_goblin", "Claude writes the verdict over the frozen math…"],
 ];
-let LOADER_TIMER = null, ELAPSED_TIMER = null;
+let LOADER_TIMER = null, ELAPSED_TIMER = null, QUIP_TIMER = null;
+
+/* ── absurd-but-on-brand status quips, rotated while the agents actually run ── */
+const LIVE_QUIPS = [
+  "Bullying a calculator into sentience…",
+  "Converting hubris into watts…",
+  "Asking the potato nicely…",
+  "Carrying the 1. Carrying it a very long way…",
+  "Negotiating with thermodynamics…",
+  "Checking whether “powers AI” counts as “runs AI”…",
+  "Counting the electrons by hand…",
+  "Weighing the verdict against a sack of potatoes…",
+];
 function renderLoading(name) {
   const steps = LIVE_STEPS.map(([n, agent, detail]) =>
-    `<li data-step="${n}"><span class="mark">${n}</span><span><b>${esc(agent)}</b> — ${esc(detail)}</span></li>`).join("");
+    `<li data-step="${n}"><span class="mark">${n}</span><span class="ll-line"><b>${esc(prettyAgent(agent))}</b> — ${esc(detail)}</span></li>`).join("");
   $("#page").innerHTML = `
     <div class="live-loader">
       <div class="ll-bar"></div>
       <div class="ll-body">
-        <p class="ll-head">Running the live pipeline… <span id="ll-elapsed" style="font-family:var(--mono);font-size:.82rem;font-weight:400;color:var(--ink-soft)">0s</span></p>
+        <p class="ll-head">Our AI Potato-Power Experts are analyzing your antique… <span id="ll-elapsed" style="font-family:var(--mono);font-size:.82rem;font-weight:400;color:var(--ink-soft)">0s</span></p>
         <p class="ll-sub">Looking at <strong>${esc(name)}</strong>. Real models, real receipts — typically ~60–90 seconds. The math stays deterministic.</p>
+        <p class="ll-quip" id="ll-quip">${esc(LIVE_QUIPS[0])}</p>
         <ul class="ll-steps">${steps}</ul>
       </div>
     </div>`;
@@ -214,10 +232,20 @@ function renderLoading(name) {
   let secs = 0;
   const el = $("#ll-elapsed");
   ELAPSED_TIMER = setInterval(() => { secs += 1; if (el) el.textContent = `${secs}s`; }, 1000);
+  // rotate the absurd quips: fade out, swap, fade in
+  let q = 0;
+  const quipEl = $("#ll-quip");
+  QUIP_TIMER = setInterval(() => {
+    q = (q + 1) % LIVE_QUIPS.length;
+    if (!quipEl) return;
+    quipEl.style.opacity = "0";
+    setTimeout(() => { quipEl.textContent = LIVE_QUIPS[q]; quipEl.style.opacity = "1"; }, 220);
+  }, 3600);
 }
 function stopLoading() {
   if (LOADER_TIMER) { clearInterval(LOADER_TIMER); LOADER_TIMER = null; }
   if (ELAPSED_TIMER) { clearInterval(ELAPSED_TIMER); ELAPSED_TIMER = null; }
+  if (QUIP_TIMER) { clearInterval(QUIP_TIMER); QUIP_TIMER = null; }
 }
 
 /* ── load + render one case ── */
@@ -237,24 +265,143 @@ function syncActive() {
   document.querySelectorAll(".specimen").forEach(b => b.setAttribute("aria-current", String(b.dataset.case === CURRENT)));
 }
 
-/* ── render the specimen rail (numbered tiles; uploads get a delete target) ── */
+/* ── the specimen rail — scales to hundreds without burying the demo ──
+   A pinned "Arc" group (the curated demo + live runs, never paged) sits above a
+   "Community" group (visitor uploads) that is SEARCHABLE + PAGINATED (20/page),
+   with a 🎲 random pick. Split is by `deletable`: curated = pinned, uploads = community. */
+const PAGE_SIZE = 20;
+let PAGE = 0;        // current community page
+let FILTER = "";     // community search text
+
+function specimenRow(c, idx) {
+  const v = verdict(c);
+  const vtxt = v.never ? "Never · ∞" : `${v.big} ${v.unit.split(" ")[0]}`;
+  const num = String(idx).padStart(2, "0");
+  const liveCls = c.live ? " is-live" : "";
+  const del = c.deletable
+    ? `<button class="del" type="button" data-del="${esc(c.case)}" title="Remove this specimen" aria-label="Remove ${esc(c.display)}">✕</button>`
+    : "";
+  return `<li class="spec-row">
+    <button class="specimen${liveCls}" type="button" data-case="${esc(c.case)}" aria-current="${c.case === CURRENT}">
+      <span class="idx">${num}</span>
+      <span class="lbl"><span class="name">${esc(c.display)}</span><span class="verdict">${esc(vtxt)}</span></span>
+    </button>${del}</li>`;
+}
+
+const communityCases = () => CASES.filter(c => c.deletable);
+function filteredCommunity() {
+  const f = FILTER.trim().toLowerCase();
+  const all = communityCases();
+  return f ? all.filter(c => (c.display || "").toLowerCase().includes(f)) : all;
+}
+
+/* re-render ONLY the community list + pager — leaves the search box (and its focus) alone. */
+function renderCommunity() {
+  const listEl = $("#community-list");
+  if (!listEl) return;
+  const filtered = filteredCommunity();
+  const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  PAGE = Math.min(Math.max(0, PAGE), pages - 1);
+  const start = PAGE * PAGE_SIZE;
+  const pageItems = filtered.slice(start, start + PAGE_SIZE);
+  listEl.innerHTML = pageItems.length
+    ? pageItems.map((c, i) => specimenRow(c, start + i + 1)).join("")
+    : `<div class="rail-empty">No specimens match “${esc(FILTER)}”.</div>`;
+  const pagerEl = $("#rail-pager");
+  if (!pagerEl) return;
+  if (filtered.length > PAGE_SIZE) {
+    const a = start + 1, b = Math.min(start + PAGE_SIZE, filtered.length);
+    pagerEl.innerHTML = `
+      <div class="pager-info">showing ${a}–${b} of ${filtered.length}${FILTER.trim() ? " · filtered" : ""}</div>
+      <div class="pager-row">
+        <button class="pager-btn" type="button" data-page="first" ${PAGE === 0 ? "disabled" : ""} title="First" aria-label="First page">◀</button>
+        <button class="pager-btn" type="button" data-page="prev"  ${PAGE === 0 ? "disabled" : ""} title="Previous" aria-label="Previous page">‹</button>
+        <span class="pager-cur">${PAGE + 1}/${pages}</span>
+        <button class="pager-btn" type="button" data-page="next"  ${PAGE >= pages - 1 ? "disabled" : ""} title="Next" aria-label="Next page">›</button>
+        <button class="pager-btn" type="button" data-page="last"  ${PAGE >= pages - 1 ? "disabled" : ""} title="Last" aria-label="Last page">▶</button>
+      </div>`;
+  } else {
+    pagerEl.innerHTML = FILTER.trim() && filtered.length
+      ? `<div class="pager-info">${filtered.length} match${filtered.length === 1 ? "" : "es"}</div>` : "";
+  }
+}
+
+function gotoPage(which) {
+  const pages = Math.max(1, Math.ceil(filteredCommunity().length / PAGE_SIZE));
+  if (which === "first") PAGE = 0;
+  else if (which === "prev") PAGE = Math.max(0, PAGE - 1);
+  else if (which === "next") PAGE = Math.min(pages - 1, PAGE + 1);
+  else if (which === "last") PAGE = pages - 1;
+  renderCommunity();
+}
+
+/* make a community case visible: clear the filter, jump to its page. (Arc cases are always shown.) */
+function revealCase(caseId) {
+  const pos = communityCases().findIndex(c => c.case === caseId);
+  if (pos < 0) return;
+  FILTER = ""; const s = $("#rail-search"); if (s) s.value = "";
+  PAGE = Math.floor(pos / PAGE_SIZE);
+  renderCommunity();
+}
+
+/* 🎲 — load a random specimen (≠ current); surface its page if it's a community one. */
+function surpriseMe() {
+  if (!CASES.length) return;
+  const pool = CASES.filter(c => c.case !== CURRENT);
+  const list = pool.length ? pool : CASES;
+  const pick = list[Math.floor(Math.random() * list.length)];
+  revealCase(pick.case);
+  loadCase(pick.case);
+}
+
+/* full rail rebuild — pinned Arc (all) + Community (search + paged). */
 function renderRail() {
   const list = $("#case-list");
   $("#case-count").textContent = CASES.length ? `(${CASES.length})` : "";
-  list.innerHTML = CASES.map((c, i) => {
-    const v = verdict(c);
-    const vtxt = v.never ? "Never · ∞" : `${v.big} ${v.unit.split(" ")[0]}`;
-    const idx = String(i + 1).padStart(2, "0");
-    const liveCls = c.live ? " is-live" : "";
-    const del = c.deletable
-      ? `<button class="del" type="button" data-del="${esc(c.case)}" title="Remove this specimen" aria-label="Remove ${esc(c.display)}">✕</button>`
-      : "";
-    return `<li class="spec-row">
-      <button class="specimen${liveCls}" type="button" data-case="${esc(c.case)}" aria-current="${c.case === CURRENT}">
-        <span class="idx">${idx}</span>
-        <span class="lbl"><span class="name">${esc(c.display)}</span><span class="verdict">${esc(vtxt)}</span></span>
-      </button>${del}</li>`;
-  }).join("");
+  const arc = CASES.filter(c => !c.deletable);
+  const community = communityCases();
+  let html = "";
+  if (arc.length) {
+    html += `<div class="rail-grp"><span class="rgl">The Arc — the demo</span></div>`;
+    html += arc.map((c, i) => specimenRow(c, i + 1)).join("");
+  }
+  if (community.length) {
+    html += `<div class="rail-grp"><span class="rgl">Community <span class="rgc">(${community.length})</span></span>
+      <button class="surprise" type="button" data-surprise title="Load a random specimen">🎲 random</button></div>`;
+    html += `<div class="rail-search-row"><input id="rail-search" class="rail-search" type="search"
+      placeholder="🔍 filter specimens…" value="${esc(FILTER)}" autocomplete="off" aria-label="Filter community specimens"></div>`;
+    html += `<div id="community-list"></div><div id="rail-pager"></div>`;
+  }
+  list.innerHTML = html;
+  if (community.length) renderCommunity();
+}
+
+/* rail-control styles, injected once — keeps this in main.js's lane (no index.html edit). */
+function injectRailCSS() {
+  if ($("#rail-css")) return;
+  const s = document.createElement("style");
+  s.id = "rail-css";
+  s.textContent = `
+    .rail-grp{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.6rem .15rem .35rem;margin-top:.35rem}
+    .rail-grp:first-child{margin-top:0}
+    .rgl{font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+    .rgc{opacity:.65}
+    .surprise{font-family:var(--mono);font-size:.64rem;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;
+      background:var(--cream-2);border:1px solid var(--border);color:var(--purple-700);padding:.22rem .45rem;transition:background .14s,border-color .14s}
+    .surprise:hover{background:var(--purple-100);border-color:var(--lime-500)}
+    .rail-search-row{padding:.1rem 0 .55rem}
+    .rail-search{width:100%;font:inherit;font-size:.85rem;padding:.45rem .6rem;color:var(--ink);background:var(--paper);border:1px solid var(--border);outline:none}
+    .rail-search:focus{border-color:var(--lime-500)}
+    .rail-empty{font-size:.82rem;color:var(--ink-soft);padding:.55rem .15rem}
+    #rail-pager{display:flex;flex-direction:column;gap:.35rem;padding:.55rem .15rem .2rem}
+    .pager-info{font-family:var(--mono);font-size:.66rem;color:var(--ink-soft);text-align:center}
+    .pager-row{display:flex;gap:.2rem;justify-content:center;align-items:center}
+    .pager-btn{font-family:var(--mono);font-size:.72rem;cursor:pointer;background:var(--paper);border:1px solid var(--border);
+      color:var(--ink);padding:.22rem .42rem;min-width:1.9rem;transition:background .14s,color .14s,border-color .14s}
+    .pager-btn:hover:not(:disabled){background:var(--purple-700);color:var(--cream);border-color:var(--purple-700)}
+    .pager-btn:disabled{opacity:.35;cursor:default}
+    .pager-cur{font-family:var(--mono);font-size:.72rem;color:var(--ink-soft);padding:0 .45rem;white-space:nowrap}`;
+  document.head.appendChild(s);
 }
 
 async function refreshCases() {
@@ -291,6 +438,7 @@ async function handleUpload(file) {
     const { case: newCase } = await r.json();
     BUSY = false;
     await refreshCases();
+    revealCase(newCase);          // surface the new upload's page in the rail
     await loadCase(newCase);
   } catch (e) {
     stopLoading();
@@ -323,12 +471,20 @@ async function handleDelete(caseId) {
 }
 
 async function init() {
+  injectRailCSS();
   // rail interactions via delegation (survives re-renders)
   $("#case-list").addEventListener("click", (e) => {
     const del = e.target.closest(".del");
     if (del) { handleDelete(del.dataset.del); return; }
+    if (e.target.closest(".surprise")) { surpriseMe(); return; }
+    const pg = e.target.closest("[data-page]");
+    if (pg) { gotoPage(pg.dataset.page); return; }
     const spec = e.target.closest(".specimen");
     if (spec) loadCase(spec.dataset.case);
+  });
+  // search the community pile (re-renders only the list+pager → keeps input focus)
+  $("#case-list").addEventListener("input", (e) => {
+    if (e.target.id === "rail-search") { FILTER = e.target.value; PAGE = 0; renderCommunity(); }
   });
 
   // upload: file picker + drag-and-drop onto the uploader

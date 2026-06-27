@@ -1,4 +1,4 @@
-# Antique Infernal Engine constants.
+# Antiques Inference Engine constants.
 # The "AI Hello" target is a playful demo benchmark, not a universal AI benchmark.
 
 ai_hello_watts: 30

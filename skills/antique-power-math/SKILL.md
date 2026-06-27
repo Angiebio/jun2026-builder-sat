@@ -5,7 +5,7 @@ description: "Compute whether an antique or object could power or run AI inferen
 
 # antique-power-math
 
-Use this skill to produce frozen math for the Antique Infernal Engine article. The model may classify the artifact path and extract assumptions; `scripts/power_calc.py` performs the arithmetic.
+Use this skill to produce frozen math for the Antiques Inference Engine article. The model may classify the artifact path and extract assumptions; `scripts/power_calc.py` performs the arithmetic.
 
 Constants live in `references/constants.yaml`. Taxonomy lives in `references/taxonomy.json`.
 

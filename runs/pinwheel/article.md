@@ -1,4 +1,4 @@
-# 🥔 Antique Infernal Engine — Field Guide
+# 🥔 Antiques Inference Engine — Field Guide
 
 ## Odhner-type pinwheel mechanical calculator ("Rapid Calculator")
 *pinwheel class ~1900-1960; this unit ~1950 · path: `mechanical_decimal_compute` · confidence 82%*

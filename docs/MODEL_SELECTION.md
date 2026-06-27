@@ -1,4 +1,4 @@
-# Model Selection Rationale — Antique Infernal Engine
+# Model Selection Rationale — Antiques Inference Engine
 *Mandatory gate (all lanes): which model does which task + cost/latency/quality
 justification. Measured numbers land from one smoke run into `runs/<id>/trace.json`.*
 

@@ -1,1 +1,1 @@
-"""Eval package for Antique Infernal Engine."""
+"""Eval package for Antiques Inference Engine."""

@@ -1,4 +1,4 @@
-# 🥔🔥 Demo Script — Antique Infernal Engine
+# 🥔🔥 Demo Script — Antiques Inference Engine
 *Run-of-show for the 2–3 min finalist demo. Spine line: **"The humor is decorative. The math is structural."***
 
 > **Demo-safety first (the floor-first promise).** The **primary demo runs from fixtures,
@@ -41,7 +41,7 @@ machines get cleverer, but never actually possible. Every number below is real, 
 > is the surprise at the end.
 
 **0:00 — Hook + the gasp.** *(load `punched_cards` first)*
-> "This is the Antique Infernal Engine, from The Real Cat AI Labs — a field-guide generator
+> "This is the Antiques Inference Engine, from The Real Cat AI Labs — a field-guide generator
 > for the least efficient question in computing history: **could this antique run AI?** Our
 > first contestant is a deck of 1960s punched cards." *(show the purple **Can it Run AI?**
 > card: ❌ **Never (∞)**)* "The verdict is never. As our field guide puts it — **the first
@@ -100,7 +100,7 @@ machines get cleverer, but never actually possible. Every number below is real, 
 | Judge: "what does the small model actually do?" | "On `--live`, granite classifies the power/compute path into a constrained taxonomy and QCs the units — the discipline membrane. Frontier only sees and writes." |
 
 ## 30-second version (if they cut you short)
-> "Antique Infernal Engine: photograph an antique, get a field-guide page that computes —
+> "Antiques Inference Engine: photograph an antique, get a field-guide page that computes —
 > with real physics — whether it could run AI. Punch cards: never. A TI-82: six and a half
 > hours. Five agents, two skills, a deterministic calculator the model never overrides. Runs
 > local, zero keys. The humor is decorative; the math is structural." 🥔

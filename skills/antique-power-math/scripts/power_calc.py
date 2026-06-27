@@ -1,4 +1,4 @@
-"""Deterministic AI-equivalence calculator for Antique Infernal Engine.
+"""Deterministic AI-equivalence calculator for Antiques Inference Engine.
 
 The model may choose assumptions. This script owns the arithmetic.
 """

@@ -1,4 +1,4 @@
-# 🥔🔥 Antique Infernal Engine
+# 🥔🔥 Antiques Inference Engine
 
 > Hand it a photo of an antique. Get a TRCL field-guide page that computes, with **real physics**, whether the thing could power or run AI.
 
@@ -9,6 +9,8 @@
 [![Runs fully local](https://img.shields.io/badge/runs-fully%20local%20·%20zero%20keys-5bb545.svg)](#quickstart)
 [![Skill vs baseline](https://img.shields.io/badge/skill%20vs%20baseline-24%2F24%20vs%200%2F4-f5841f.svg)](#does-the-skill-earn-its-place)
 [![Lane 3](https://img.shields.io/badge/lane-3%20·%20multi--agent%20%2B%20skills-e8e52a.svg)](#how-it-works)
+
+> 🏆 **Hackathon submission** — built end-to-end in a single ~6-hour window at **The Open Accelerator** (Red Hat + IBM), Fort Point, Boston, on **June 27, 2026**, in the **Lane 3** "skilled agents" track. One human directing a crew of AI collaborators — see [the agent crew](#the-agent-crew).
 
 A small multi-agent system from [therealcat.ai](https://therealcat.ai) that answers the least efficient question in history: *could this antique run AI?* It is Angie's book *100 Ways to Power Artificial Intelligence* turned into a working agent — five cooperating sub-agents, two custom [Agent Skills](https://agentskills.io), a deterministic physics core, and an adjudication loop that argues with itself until the numbers hold up.
 
@@ -266,11 +268,19 @@ This README is part of the public deliverable. Planning, peer reviews, and resea
 
 ---
 
+## About The Real Cat AI
+
+**[The Real Cat AI Labs](https://therealcat.ai)** builds *structurally unprofitable AI — because digital literacy is the point.* Small, legible, teachable systems that show their work: not a black box that answers, but a glass one you can learn from. This engine is one entry from Angie's book *100 Ways to Power Artificial Intelligence* — absurd premises, rigorous math, every joke sitting on a real number.
+
+Founded by **Angela N. Johnson, PhD**. More at **[therealcat.ai](https://therealcat.ai)**.
+
+---
+
 ## License
 
 [MIT](LICENSE) © 2026 The Real Cat Labs, Inc. / Angela N. Johnson
 
 ---
 
-<sub>🥔🔥 <b>Antique Infernal Engine</b> · v0.1.0 (build-day) · therealcat.ai<br>
+<sub>🥔🔥 <b>Antiques Inference Engine</b> · v0.1.0 (build-day) · therealcat.ai<br>
 Built live at The Open Accelerator, Fort Point, Boston · Saturday, June 27, 2026 — inside the build window.</sub>
