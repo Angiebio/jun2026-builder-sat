@@ -1,4 +1,4 @@
-"""agents.py — the five goblins of the Antique Infernal Engine.
+"""agents.py — the five goblins of the Antiques Inference Engine.
 
 FLOOR (this version): fixture-backed + deterministic — ZERO LLM calls, so the
 core demo can never die on venue Wi-Fi or a dead key.
@@ -67,7 +67,7 @@ def reality_badger(math: dict, research: ResearchNotes, obs: ArtifactObservation
     reason, route = "ok", None
     if obs.confidence < 0.40:
         reason, route = "artifact confidence too low to assess", "artifact_goblin"
-    elif math.get("mode") not in ("power", "compute", "unsupported"):
+    elif math.get("mode") not in ("power", "compute", "unsupported", "absurd_power"):
         reason, route = f"bad math mode: {math.get('mode')}", "potato_accountant"
     elif math.get("can_evaluate") is False and math.get("mode") != "unsupported" \
             and not research.usable_assumptions:
@@ -106,7 +106,7 @@ def page_goblin(math: dict, qc: QCResult, obs: ArtifactObservation, research: Re
 
     notes = "; ".join(n.get("claim", "") for n in research.historical_notes[:2]) or research.mechanism
 
-    return f"""# 🥔 Antique Infernal Engine — Field Guide
+    return f"""# 🥔 Antiques Inference Engine — Field Guide
 
 ## {obs.artifact_guess}
 *{research.era} · path: `{obs.power_or_compute_path}` · confidence {obs.confidence:.0%}*
