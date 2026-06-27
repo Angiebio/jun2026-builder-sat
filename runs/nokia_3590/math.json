@@ -1,0 +1,17 @@
+{
+  "path": "silicon_microprocessor_compute",
+  "mode": "compute",
+  "input_value": 23000000.0,
+  "input_unit": "ops_per_second",
+  "units_for_ai_hello": 0.0,
+  "potatoes_equivalent": 0.0,
+  "cyclists_equivalent": 0.0,
+  "time_seconds": 608.69565217,
+  "time_years": 1.929e-05,
+  "can_evaluate": true,
+  "calculation_log": [
+    "Compute path: 23000000.0 ops/sec.",
+    "AI Hello target: 14000000000.0 operations.",
+    "Time required: 14000000000.0 / 23000000.0 seconds."
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case": "pinwheel",
+  "loops": 1,
+  "passed": true,
+  "steps": [
+    {
+      "agent": "artifact_goblin",
+      "model": "fixture",
+      "guess": "Odhner-type pinwheel mechanical calculator (\"Rapid Calculator\")"
+    },
+    {
+      "agent": "sherlock_ohms",
+      "model": "fixture",
+      "family": "Odhner / Brunsviga pinwheel decimal calculator"
+    },
+    {
+      "agent": "accountant+badger (loop 1)",
+      "model": "deterministic",
+      "skills": [
+        "antique-power-math"
+      ],
+      "pass": true,
+      "route_to": null,
+      "reason": "ok"
+    },
+    {
+      "agent": "page_goblin",
+      "model": "deterministic",
+      "skills": [
+        "trcl-field-guide-writer"
+      ],
+      "output": "article.md"
+    }
+  ]
+}

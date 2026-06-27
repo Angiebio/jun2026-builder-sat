@@ -1,0 +1,35 @@
+{
+  "case": "nokia_3590",
+  "loops": 1,
+  "passed": true,
+  "steps": [
+    {
+      "agent": "artifact_goblin",
+      "model": "fixture",
+      "guess": "Nokia candybar mobile phone (AT&T branded, monochrome) -- likely Nokia 3590"
+    },
+    {
+      "agent": "sherlock_ohms",
+      "model": "fixture",
+      "family": "Nokia DCT4-platform GSM mobile phone (ARM7TDMI)"
+    },
+    {
+      "agent": "accountant+badger (loop 1)",
+      "model": "deterministic",
+      "skills": [
+        "antique-power-math"
+      ],
+      "pass": true,
+      "route_to": null,
+      "reason": "ok"
+    },
+    {
+      "agent": "page_goblin",
+      "model": "deterministic",
+      "skills": [
+        "trcl-field-guide-writer"
+      ],
+      "output": "article.md"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "artifact_family": "IBM 80-column Hollerith punched card (FORTRAN coding deck)",
+  "era": "80-column rectangular-hole format introduced 1928; this FORTRAN deck ~1960s-1970s",
+  "mechanism": "Passive storage medium. 80 columns x 12 rows = 960 hole positions; in Hollerith/character mode each column encodes one of 80 characters (80 bytes / 640 bits per card). The card stores program or data and performs no computation itself -- a separate card-reader peripheral feeds it to a computer.",
+  "historical_notes": [
+    {
+      "claim": "An 80-column card holds 80 characters; 80 columns x 12 rows = 960 bit positions.",
+      "source": "Punched card -- en.wikipedia.org/wiki/Punched_card"
+    },
+    {
+      "claim": "The IBM 80-column rectangular-hole format was introduced in 1928.",
+      "source": "Punched card -- en.wikipedia.org/wiki/Punched_card"
+    }
+  ],
+  "usable_assumptions": [
+    {
+      "parameter": "ops_per_second",
+      "value": 0.0,
+      "confidence": "n/a -- passive storage medium, performs no computation"
+    },
+    {
+      "parameter": "data_bits_max_binary",
+      "value": 960.0,
+      "confidence": "exact -- 80 columns x 12 rows"
+    },
+    {
+      "parameter": "data_bytes_char_mode",
+      "value": 80.0,
+      "confidence": "exact -- 80 characters per card"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "artifact_guess": "Odhner-type pinwheel mechanical calculator (\"Rapid Calculator\")",
+  "confidence": 0.82,
+  "visible_features": [
+    "hand crank on the right side",
+    "cylindrical setting drum with sliding-pin wheels numbered 0-9",
+    "18-position result register on the lower carriage",
+    "MULT / DIV selector lever at the drum end",
+    "revolution / quotient counter register",
+    "black enamel body mounted on a wooden base",
+    "embossed 'RAPID CALCULATOR' branding on the drum cover"
+  ],
+  "alternate_guesses": [
+    "Original-Odhner 24",
+    "Brunsviga pinwheel calculator",
+    "Triumphator / Thales pinwheel calculator"
+  ],
+  "power_or_compute_path": "mechanical_decimal_compute",
+  "suggested_crop_roi": [
+    150,
+    380,
+    470,
+    560
+  ]
+}

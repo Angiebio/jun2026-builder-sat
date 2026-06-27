@@ -1,0 +1,23 @@
+{
+  "artifact_guess": "Nokia candybar mobile phone (AT&T branded, monochrome) -- likely Nokia 3590",
+  "confidence": 0.6,
+  "visible_features": [
+    "Nokia wordmark on the front fascia",
+    "AT&T logo at top-right",
+    "monochrome reflective LCD",
+    "12-key alphanumeric T9 keypad with green call and red end keys",
+    "candybar form factor, dark housing"
+  ],
+  "alternate_guesses": [
+    "Nokia 3595 (if the screen is color)",
+    "Nokia 3510i",
+    "Nokia 6010"
+  ],
+  "power_or_compute_path": "silicon_microprocessor_compute",
+  "suggested_crop_roi": [
+    430,
+    70,
+    980,
+    520
+  ]
+}

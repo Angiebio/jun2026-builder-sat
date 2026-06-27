@@ -1,0 +1,23 @@
+{
+  "artifact_guess": "IBM 80-column punched cards (FORTRAN program deck)",
+  "confidence": 0.85,
+  "visible_features": [
+    "rectangular-hole 80-column card stock",
+    "printed digit matrix rows 0-9 across 80 numbered columns",
+    "field labels ONE..EIGHT and 'GENERAL PURPOSE 8 FIELD'",
+    "imprint 'MID-CONTINENT 5280'",
+    "punched FORTRAN statement 'ST=ST+XX(KT)*XX(M)' along the top edge",
+    "stacked multi-color deck (pink / yellow / green)"
+  ],
+  "alternate_guesses": [
+    "IBM Hollerith data-processing cards",
+    "Jacquard loom cards (wrong era and format)"
+  ],
+  "power_or_compute_path": "punched_card_parallel_binary",
+  "suggested_crop_roi": [
+    60,
+    470,
+    980,
+    545
+  ]
+}

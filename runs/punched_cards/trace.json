@@ -1,0 +1,35 @@
+{
+  "case": "punched_cards",
+  "loops": 1,
+  "passed": true,
+  "steps": [
+    {
+      "agent": "artifact_goblin",
+      "model": "fixture",
+      "guess": "IBM 80-column punched cards (FORTRAN program deck)"
+    },
+    {
+      "agent": "sherlock_ohms",
+      "model": "fixture",
+      "family": "IBM 80-column Hollerith punched card (FORTRAN coding deck)"
+    },
+    {
+      "agent": "accountant+badger (loop 1)",
+      "model": "deterministic",
+      "skills": [
+        "antique-power-math"
+      ],
+      "pass": true,
+      "route_to": null,
+      "reason": "ok"
+    },
+    {
+      "agent": "page_goblin",
+      "model": "deterministic",
+      "skills": [
+        "trcl-field-guide-writer"
+      ],
+      "output": "article.md"
+    }
+  ]
+}

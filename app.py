@@ -35,6 +35,7 @@ IMAGE_MAP = {
     "punched_cards": "IMG_4526.JPG",
     "ti_82": "IMG_4527.JPG",
     "nokia_3590": "IMG_4524.JPG",
+    "IMG_4523": "IMG_4523.JPG",   # live run (Claude saw the pinwheel photo)
 }
 
 app = FastAPI(title="Antique Infernal Engine")
@@ -44,9 +45,27 @@ def _read_json(p: Path) -> dict:
     return json.loads(p.read_text(encoding="utf-8"))
 
 
+def _is_live_extra(name: str) -> bool:
+    """A live/ad-hoc run (Claude saw a fresh photo) — not a curated fixture, not eval scratch."""
+    return name not in ARC_ORDER and not name.startswith("eval_")
+
+
+def _display(case: str) -> str:
+    if case in DISPLAY:
+        return DISPLAY[case]
+    obs = RUNS / case / "observation.json"
+    if obs.exists():
+        g = _read_json(obs).get("artifact_guess", "").split(" - ")[0].split(",")[0].strip()
+        return f"🔴 LIVE: {g[:30]}" if g else f"🔴 LIVE: {case}"
+    return case
+
+
 def _ordered_cases() -> list[str]:
-    """Only the curated demo arc — excludes eval_*/benchmark scratch run dirs."""
-    return [c for c in ARC_ORDER if (RUNS / c / "math.json").exists()]
+    """Curated demo arc first, then any LIVE/ad-hoc runs (excludes eval_* scratch)."""
+    base = [c for c in ARC_ORDER if (RUNS / c / "math.json").exists()]
+    extras = sorted(d.name for d in RUNS.iterdir()
+                    if d.is_dir() and (d / "math.json").exists() and _is_live_extra(d.name)) if RUNS.exists() else []
+    return base + extras
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -64,7 +83,8 @@ def cases() -> dict:
         m = _read_json(RUNS / c / "math.json")
         out.append({
             "case": c,
-            "display": DISPLAY.get(c, c),
+            "display": _display(c),
+            "live": _is_live_extra(c),
             "time_seconds": m.get("time_seconds", 0.0),
             "can_evaluate": m.get("can_evaluate", True),
             "has_image": (IMAGES / IMAGE_MAP.get(c, "")).exists(),
@@ -86,7 +106,7 @@ def run(case: str) -> JSONResponse:
 
     return JSONResponse({
         "case": case,
-        "display": DISPLAY.get(case, case),
+        "display": _display(case),
         "article_md": maybe("article.md", ""),
         "math": maybe("math.json", {}),
         "trace": maybe("trace.json", {}),

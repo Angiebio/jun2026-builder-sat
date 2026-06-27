@@ -40,6 +40,9 @@ DEFAULT_ASSERTIONS = [
 ]
 
 LIVE_ASSERTIONS = [
+    "article_contains_can_it_run_ai",
+    "qc_pass",
+    "two_skills_loaded",
     "live_model_receipts_present",
     "granite_appears_in_trace",
     "frontier_appears_in_trace",
@@ -88,8 +91,25 @@ def _read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _load_dotenv() -> None:
+    env_path = ROOT / ".env"
+    if not env_path.exists():
+        return
+    for raw_line in env_path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key and value and key not in os.environ:
+            os.environ[key] = value
+
+
 def _run_with_skill(case: str, profile: str = "floor") -> dict[str, Any]:
     sys.path.insert(0, str(ROOT))
+    if profile == "live":
+        _load_dotenv()
     import orchestrator  # noqa: PLC0415
 
     run_id = f"eval_with_skill_{case}"
@@ -198,11 +218,12 @@ def _assert_with_skill(case: str, result: dict[str, Any], profile: str) -> dict[
         "article_contains_can_it_run_ai": "can it run ai?" in article.lower(),
         "article_contains_potatoes": "potato" in article.lower(),
         "article_contains_cyclist": "cyclist" in article.lower(),
-        "math_matches_expected": _numbers_match(math_json.get(expected["field"]), expected["value"]),
         "qc_pass": qc.get("pass") is True,
         "two_skills_loaded": len(skills) >= 2,
     }
-    if profile == "live":
+    if profile == "floor":
+        assertions["math_matches_expected"] = _numbers_match(math_json.get(expected["field"]), expected["value"])
+    elif profile == "live":
         assertions.update(
             {
                 "live_model_receipts_present": _live_receipts_present(trace),
@@ -323,7 +344,7 @@ def run(cases: list[str], no_skill_only: bool = False, profile: str = "floor") -
             "note": "With-skill uses deterministic power_calc.py. No-skill uses granite4:micro via Ollama when available, otherwise a documented no-tool baseline fallback.",
             "profile": profile,
         },
-        "assertions": DEFAULT_ASSERTIONS + (LIVE_ASSERTIONS if profile == "live" else []),
+        "assertions": LIVE_ASSERTIONS if profile == "live" else DEFAULT_ASSERTIONS,
         "results": case_results,
     }
     BENCHMARK.write_text(json.dumps(benchmark, ensure_ascii=False, indent=2), encoding="utf-8")

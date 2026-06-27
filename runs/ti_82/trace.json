@@ -1,0 +1,35 @@
+{
+  "case": "ti_82",
+  "loops": 1,
+  "passed": true,
+  "steps": [
+    {
+      "agent": "artifact_goblin",
+      "model": "fixture",
+      "guess": "Texas Instruments TI-82 graphing calculator"
+    },
+    {
+      "agent": "sherlock_ohms",
+      "model": "fixture",
+      "family": "Texas Instruments Z80 graphing calculator (TI-82)"
+    },
+    {
+      "agent": "accountant+badger (loop 1)",
+      "model": "deterministic",
+      "skills": [
+        "antique-power-math"
+      ],
+      "pass": true,
+      "route_to": null,
+      "reason": "ok"
+    },
+    {
+      "agent": "page_goblin",
+      "model": "deterministic",
+      "skills": [
+        "trcl-field-guide-writer"
+      ],
+      "output": "article.md"
+    }
+  ]
+}

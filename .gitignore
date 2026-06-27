@@ -16,8 +16,12 @@ venv/
 .pytest_cache/
 .ruff_cache/
 
-# runtime output
-runs/
+# runtime output — but KEEP the 4 demo run dirs so the web UI works on a fresh clone
+runs/*
+!runs/pinwheel/
+!runs/punched_cards/
+!runs/ti_82/
+!runs/nokia_3590/
 *.log
 
 # node / build

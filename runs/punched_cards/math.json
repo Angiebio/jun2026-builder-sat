@@ -1,0 +1,16 @@
+{
+  "path": "punched_card_parallel_binary",
+  "mode": "compute",
+  "input_value": 0.0,
+  "input_unit": "ops_per_second",
+  "units_for_ai_hello": 0.0,
+  "potatoes_equivalent": 0.0,
+  "cyclists_equivalent": 0.0,
+  "time_seconds": -1.0,
+  "time_years": -1.0,
+  "can_evaluate": false,
+  "calculation_log": [
+    "Compute path has 0 ops/sec.",
+    "Sentinel -1.0 means this artifact never completes the AI Hello operation target by itself."
+  ]
+}

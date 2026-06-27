@@ -1,0 +1,17 @@
+{
+  "path": "mechanical_decimal_compute",
+  "mode": "compute",
+  "input_value": 1.0,
+  "input_unit": "ops_per_second",
+  "units_for_ai_hello": 0.0,
+  "potatoes_equivalent": 0.0,
+  "cyclists_equivalent": 0.0,
+  "time_seconds": 14000000000.0,
+  "time_years": 443.6332294,
+  "can_evaluate": true,
+  "calculation_log": [
+    "Compute path: 1.0 ops/sec.",
+    "AI Hello target: 14000000000.0 operations.",
+    "Time required: 14000000000.0 / 1.0 seconds."
+  ]
+}
