@@ -111,7 +111,7 @@ def page_goblin(math: dict, qc: QCResult, obs: ArtifactObservation, research: Re
 ## {obs.artifact_guess}
 *{research.era} · path: `{obs.power_or_compute_path}` · confidence {obs.confidence:.0%}*
 
-### Can It Run AI?
+### Can it Run AI?
 {verdict}
 
 > {headline}

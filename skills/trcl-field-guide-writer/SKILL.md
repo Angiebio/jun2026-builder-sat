@@ -7,6 +7,8 @@ description: "Write a TRCL Antique Infernal Engine field-guide page from frozen 
 
 Use this skill to render the final article after observation, research, math, and QC are complete. The writer receives frozen math and never performs arithmetic.
 
+**Fill `assets/article_template.md`** (the section-by-section page template) **in the voice of `references/voice_guide.md`.** Copy every number from the frozen math; render the `-1.0` sentinel as "Never (infinity)"; keep prose within 1% of the JSON.
+
 ## Defaults
 
 - Fill every required section.

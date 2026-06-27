@@ -1,6 +1,6 @@
 {
   "benchmark": "antique-infernal-engine",
-  "description": "With-skill (deterministic power_calc) vs no-skill (granite4:micro guesses the math). The headline result is math_exact: the skill matches the calculator 3/3; granite-alone does not.",
+  "description": "With-skill (deterministic power_calc) vs no-skill (granite4:micro guesses the math). FLOOR headline = math_exact + the skill-vs-baseline delta. PROFILES: assertions default to FLOOR (model-free, deterministic); an assertion tagged \"profile\":\"live\" runs ONLY under the --live/ENHANCE profile (granite classify+QC + Claude vision/prose). granite-in-trace is a --live assert, NEVER a FLOOR one -- an honest FLOOR trace shows deterministic, so asserting granite there would pass only on a lying trace.",
   "ai_hello_ops": 14000000000,
   "ai_hello_watts": 30,
   "baseline": {
@@ -14,7 +14,7 @@
     "math_exact": "load runs/<case>/math.json; every field in compare_fields must equal expected_math exactly (tolerance 0; the -1.0 sentinel must match). calculation_log + input_* are NOT compared (robust to log wording).",
     "qc_pass": "runs/<case>/qc.json: field 'pass' (alias 'passed') is true.",
     "skills_loaded_min": "count of DISTINCT skills recorded across runs/<case>/trace.json steps[].skills; must be >= value. The current orchestrator logs skills per step (antique-power-math on the accountant step, trcl-field-guide-writer on the page_goblin step) -> 2. Needs a fresh run from the current orchestrator; stale run dirs may lack the skills field (ti_82's checked-in trace does).",
-    "trace_contains_model": "case-insensitive substring match across all step.model values in runs/<case>/trace.json. DEPENDENCY: passes only when the granite classify+QC layer is in the eval path. The pure-deterministic floor trace shows model 'fixture'/'deterministic' and will NOT contain 'granite' until Flame1's LLM layer is wired (see scratchpad)."
+    "trace_contains_model": "(--live PROFILE ONLY) case-insensitive substring match across all step.model values in runs/<case>/trace.json. Run ONLY under --live, where granite classify+QC is in the path. Never assert on a FLOOR run: the honest FLOOR trace shows 'deterministic'/'fixture', so a granite match there would mean the trace is lying."
   },
   "cases": [
     {
@@ -38,8 +38,8 @@
         { "type": "article_contains", "value": "cyclist" },
         { "type": "math_exact" },
         { "type": "qc_pass" },
-        { "type": "skills_valid_min", "value": 2 },
-        { "type": "trace_contains_model", "value": "granite" }
+        { "type": "skills_loaded_min", "value": 2 },
+        { "type": "trace_contains_model", "value": "granite", "profile": "live" }
       ]
     },
     {
@@ -63,8 +63,8 @@
         { "type": "article_contains", "value": "cyclist" },
         { "type": "math_exact" },
         { "type": "qc_pass" },
-        { "type": "skills_valid_min", "value": 2 },
-        { "type": "trace_contains_model", "value": "granite" }
+        { "type": "skills_loaded_min", "value": 2 },
+        { "type": "trace_contains_model", "value": "granite", "profile": "live" }
       ]
     },
     {
@@ -88,8 +88,8 @@
         { "type": "article_contains", "value": "cyclist" },
         { "type": "math_exact" },
         { "type": "qc_pass" },
-        { "type": "skills_valid_min", "value": 2 },
-        { "type": "trace_contains_model", "value": "granite" }
+        { "type": "skills_loaded_min", "value": 2 },
+        { "type": "trace_contains_model", "value": "granite", "profile": "live" }
       ]
     }
   ]

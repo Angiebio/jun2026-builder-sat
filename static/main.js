@@ -93,10 +93,26 @@ function verdictCard(math, obs) {
   const statHtml = stats.map(([k, v]) => `<div class="stat"><span class="k">${esc(k)}</span><span class="v">${esc(String(v))}</span></div>`).join("");
   return `
     <div class="verdict-card${h.never ? " never" : ""}">
-      <p class="q">Can it run AI?</p>
+      <p class="q">Can it Run AI?</p>
       <p class="answer">${esc(h.big)}<span class="unit">${esc(h.unit)}</span></p>
       ${statHtml ? `<div class="stat-grid">${statHtml}</div>` : ""}
     </div>`;
+}
+
+/* ── honest receipts: surface latency/tokens/cost/skills on a step if present.
+      Field-name-agnostic so it renders whatever the --live wiring writes.
+      FLOOR steps have none → nothing shows (honest: deterministic, no model). ── */
+function receiptChips(s) {
+  const out = [];
+  for (const [k, v] of Object.entries(s)) {
+    if (/(latency|token|cost|duration|elapsed|_ms$|_s$)/i.test(k) && (typeof v === "number" || typeof v === "string")) {
+      let val = v;
+      if (typeof v === "number" && /latency|duration|elapsed/i.test(k)) val = /ms/i.test(k) ? `${v} ms` : `${v} s`;
+      out.push(`<span class="rcpt">${esc(k.replace(/_/g, " "))}: ${esc(String(val))}</span>`);
+    }
+  }
+  if (Array.isArray(s.skills) && s.skills.length) out.push(`<span class="rcpt">skills: ${s.skills.length}</span>`);
+  return out.length ? `<span class="rcpts">${out.join("")}</span>` : "";
 }
 
 /* ── render the trace ledger from trace.json ── */
@@ -108,7 +124,7 @@ function ledger(trace) {
     const cls = (model === "deterministic" || model === "fixture") ? " deterministic" : "";
     const passBit = ("pass" in s) ? (s.pass ? " ✓ pass" : " ✗ fail") : "";
     return `<div class="step"><span class="agent">${esc(s.agent || "")}</span>
-      <span class="detail">${esc(detail)}${passBit}</span>
+      <span class="detail">${esc(detail)}${passBit}${receiptChips(s)}</span>
       <span class="model${cls}">${esc(model)}</span></div>`;
   }).join("");
   const loops = (trace && trace.loops != null) ? trace.loops : "?";

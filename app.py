@@ -45,11 +45,8 @@ def _read_json(p: Path) -> dict:
 
 
 def _ordered_cases() -> list[str]:
-    """Arc order first, then any other run dirs that show up later."""
-    found = [d.name for d in RUNS.iterdir() if d.is_dir() and (d / "math.json").exists()] if RUNS.exists() else []
-    ordered = [c for c in ARC_ORDER if c in found]
-    ordered += sorted(c for c in found if c not in ARC_ORDER)
-    return ordered
+    """Only the curated demo arc — excludes eval_*/benchmark scratch run dirs."""
+    return [c for c in ARC_ORDER if (RUNS / c / "math.json").exists()]
 
 
 @app.get("/", response_class=HTMLResponse)

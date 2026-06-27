@@ -37,7 +37,12 @@ DEFAULT_ASSERTIONS = [
     "math_matches_expected",
     "qc_pass",
     "two_skills_loaded",
+]
+
+LIVE_ASSERTIONS = [
+    "live_model_receipts_present",
     "granite_appears_in_trace",
+    "frontier_appears_in_trace",
 ]
 
 FALLBACK_BASELINE = {
@@ -180,7 +185,7 @@ def _coerce_float(value: Any) -> float:
         return 0.0
 
 
-def _assert_with_skill(case: str, result: dict[str, Any]) -> dict[str, bool]:
+def _assert_with_skill(case: str, result: dict[str, Any], profile: str) -> dict[str, bool]:
     article = result["article"]
     math_json = result["math"]
     qc = result["qc"]
@@ -189,15 +194,24 @@ def _assert_with_skill(case: str, result: dict[str, Any]) -> dict[str, bool]:
     skills = _skills_from_trace(trace)
 
     expected = EXPECTED[case]
-    return {
-        "article_contains_can_it_run_ai": "Can It Run AI?" in article,
+    assertions = {
+        "article_contains_can_it_run_ai": "can it run ai?" in article.lower(),
         "article_contains_potatoes": "potato" in article.lower(),
         "article_contains_cyclist": "cyclist" in article.lower(),
         "math_matches_expected": _numbers_match(math_json.get(expected["field"]), expected["value"]),
         "qc_pass": qc.get("pass") is True,
         "two_skills_loaded": len(skills) >= 2,
-        "granite_appears_in_trace": "granite4:micro" in trace_text,
     }
+    if profile == "live":
+        assertions.update(
+            {
+                "live_model_receipts_present": _live_receipts_present(trace),
+                "granite_appears_in_trace": _model_with_receipt(trace, "granite4:micro"),
+                "frontier_appears_in_trace": _model_with_receipt(trace, "claude")
+                or _model_with_receipt(trace, "anthropic"),
+            }
+        )
+    return assertions
 
 
 def _assert_no_skill(case: str, result: dict[str, Any]) -> dict[str, bool]:
@@ -216,6 +230,29 @@ def _skills_from_trace(trace: dict[str, Any]) -> set[str]:
     return skills
 
 
+def _live_receipts_present(trace: dict[str, Any]) -> bool:
+    for step in trace.get("steps", []):
+        model = str(step.get("model", "")).lower()
+        if model in {"fixture", "deterministic"}:
+            continue
+        if "latency_ms" not in step and "duration_ms" not in step:
+            return False
+    return any(
+        str(step.get("model", "")).lower() not in {"fixture", "deterministic"}
+        for step in trace.get("steps", [])
+    )
+
+
+def _model_with_receipt(trace: dict[str, Any], model_name: str) -> bool:
+    needle = model_name.lower()
+    for step in trace.get("steps", []):
+        if needle not in str(step.get("model", "")).lower():
+            continue
+        if "latency_ms" in step or "duration_ms" in step:
+            return True
+    return False
+
+
 def _numbers_match(actual: Any, expected: float) -> bool:
     try:
         actual_float = float(actual)
@@ -228,7 +265,7 @@ def _score(assertions: dict[str, bool]) -> tuple[int, int]:
     return sum(1 for passed in assertions.values() if passed), len(assertions)
 
 
-def run(cases: list[str], no_skill_only: bool = False) -> dict[str, Any]:
+def run(cases: list[str], no_skill_only: bool = False, profile: str = "floor") -> dict[str, Any]:
     case_results = []
     with_skill_total = [0, 0]
     no_skill_total = [0, 0]
@@ -247,7 +284,7 @@ def run(cases: list[str], no_skill_only: bool = False) -> dict[str, Any]:
         with_passed = with_total = 0
         if not no_skill_only:
             with_skill = _run_with_skill(case)
-            with_assertions = _assert_with_skill(case, with_skill)
+            with_assertions = _assert_with_skill(case, with_skill, profile=profile)
             with_passed, with_total = _score(with_assertions)
             with_skill_total[0] += with_passed
             with_skill_total[1] += with_total
@@ -284,8 +321,9 @@ def run(cases: list[str], no_skill_only: bool = False) -> dict[str, Any]:
             "no_skill_total": no_skill_total[1],
             "delta_passes": with_skill_total[0] - no_skill_total[0],
             "note": "With-skill uses deterministic power_calc.py. No-skill uses granite4:micro via Ollama when available, otherwise a documented no-tool baseline fallback.",
+            "profile": profile,
         },
-        "assertions": DEFAULT_ASSERTIONS,
+        "assertions": DEFAULT_ASSERTIONS + (LIVE_ASSERTIONS if profile == "live" else []),
         "results": case_results,
     }
     BENCHMARK.write_text(json.dumps(benchmark, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -296,10 +334,16 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run Antique Infernal Engine evals.")
     parser.add_argument("--case", action="append", choices=sorted(EXPECTED), help="Run one case; repeatable.")
     parser.add_argument("--no-skill-only", action="store_true", help="Only run the no-skill baseline.")
+    parser.add_argument(
+        "--profile",
+        choices=["floor", "live"],
+        default="floor",
+        help="floor checks deterministic fixture pipeline; live also requires real model receipts in trace.",
+    )
     args = parser.parse_args(argv)
 
     cases = args.case or _load_cases()
-    benchmark = run(cases, no_skill_only=args.no_skill_only)
+    benchmark = run(cases, no_skill_only=args.no_skill_only, profile=args.profile)
     summary = benchmark["summary"]
     print(json.dumps(summary, ensure_ascii=False, indent=2))
 

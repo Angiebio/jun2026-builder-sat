@@ -53,7 +53,7 @@ def run_infernal_engine(case: str, run_id: str | None = None) -> str:
         qc = agents.reality_badger(math, research, obs)
         _write(run_dir, "qc", qc)
         trace.append({
-            "agent": f"accountant+badger (loop {attempt + 1})", "model": "granite4:micro + deterministic",
+            "agent": f"accountant+badger (loop {attempt + 1})", "model": "deterministic",
             "skills": ["antique-power-math"],
             "pass": qc.passed, "route_to": qc.route_to, "reason": qc.reason,
         })
