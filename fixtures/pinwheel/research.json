@@ -1,0 +1,15 @@
+{
+  "artifact_family": "Odhner / Brunsviga pinwheel decimal calculator",
+  "era": "pinwheel class ~1900-1960; this unit ~1950",
+  "mechanism": "Hand-cranked pinwheel (Odhner) with sliding-pin setting wheels. One addition or subtraction per crank revolution; multiplication is repeated addition with carriage shifts (a 3-digit multiply takes ~17 crank turns). No stored program -- register-based base-10 arithmetic.",
+  "historical_notes": [
+    {"claim": "A full multiplication takes about 17 crank turns on a pinwheel calculator.", "source": "HP Museum -- hpmuseum.org/ffhand.htm"},
+    {"claim": "Original-Odhner large-register models (20-digit result register) date to 1940-1954.", "source": "Jaap's Mechanical Calculators -- jaapsch.net/mechcalc/odhner.htm"}
+  ],
+  "usable_assumptions": [
+    {"parameter": "ops_per_second", "value": 1.0, "confidence": "low -- one add per crank rev at ~1 rev/s; operator-dependent"},
+    {"parameter": "ops_per_second_realistic_multiply", "value": 0.1, "confidence": "estimate -- ~17 crank turns per multiply"},
+    {"parameter": "human_crank_watts", "value": 7.0, "confidence": "estimate -- P=2*pi*n*tau, ~5-10 W sustained"},
+    {"parameter": "result_register_bits", "value": 60.0, "confidence": "approx -- ~18 digits * log2(10)"}
+  ]
+}

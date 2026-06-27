@@ -1,0 +1,34 @@
+# secrets — never commit
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*secret*
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.uv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# runtime output
+runs/
+*.log
+
+# node / build
+node_modules/
+dist/
+
+# os / onedrive
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+
+# local demo inputs — kept local, NOT part of the judged deliverable
+test images/

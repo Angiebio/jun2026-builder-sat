@@ -1,0 +1,19 @@
+{
+  "artifact_guess": "Texas Instruments TI-82 graphing calculator",
+  "confidence": 0.9,
+  "visible_features": [
+    "'TI-82' model label and Texas Instruments logo",
+    "monochrome LCD dot-matrix screen",
+    "graphing function key row (Y=, WINDOW, ZOOM, TRACE, GRAPH)",
+    "blue 2nd key and grey ALPHA key",
+    "slide-on hard cover",
+    "four-way directional arrow pad"
+  ],
+  "alternate_guesses": [
+    "TI-83",
+    "TI-85",
+    "TI-81"
+  ],
+  "power_or_compute_path": "silicon_microprocessor_compute",
+  "suggested_crop_roi": [60, 250, 360, 470]
+}

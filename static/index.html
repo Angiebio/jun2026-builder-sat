@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Antique Infernal Engine — Can It Run AI?</title>
+<style>
+/* ───────────────────────────────────────────────────────────────────────────
+   The Real Cat AI — brand tokens (from the frontend-design skill).
+   purple #4a0873 + leaf-green #5bb545 on cream #fafaf5. OKLCH source of truth.
+   Anti-default discipline: no Inter-only, no purple->indigo gradient hero,
+   no uniform rounded-xl, layered hue-tinted shadows, grain texture, asymmetric
+   layout, lime = accent only (dark text on it). Offline: system font stacks,
+   inline SVG grain, zero CDNs.
+   ─────────────────────────────────────────────────────────────────────────── */
+:root{
+  --purple-700: oklch(0.34 0.18 305);   /* #4a0873 brand primary */
+  --purple-600: oklch(0.44 0.20 305);
+  --purple-500: oklch(0.52 0.20 305);
+  --purple-300: oklch(0.74 0.13 305);
+  --purple-100: oklch(0.92 0.05 305);
+  --purple-950: oklch(0.13 0.06 305);
+  --lime-500:   oklch(0.68 0.19 135);   /* #5bb545 accent ONLY */
+  --lime-600:   oklch(0.58 0.17 135);
+  --lime-200:   oklch(0.87 0.13 135);
+  --cream:      oklch(0.985 0.006 90);  /* #fafaf5 field */
+  --cream-2:    oklch(0.965 0.010 90);  /* #f5f1e8 surface */
+  --paper:      oklch(0.99 0.004 90);
+  --ink:        oklch(0.17 0.020 300);  /* near-black, purple cast */
+  --ink-soft:   oklch(0.40 0.012 300);
+  --border:     oklch(0.90 0.012 90);
+  --shadow:
+    0 1px 2px oklch(0.17 0.04 305 / 0.05),
+    0 6px 14px oklch(0.17 0.04 305 / 0.06),
+    0 18px 36px oklch(0.17 0.04 305 / 0.05);
+  --shadow-sm: 0 1px 2px oklch(0.17 0.04 305 / 0.07);
+  --r-sm: 5px; --r-md: 10px; --r-lg: 18px;   /* deliberate radius scale, not one global */
+  --display: "Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+  --body: ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono: "Cascadia Code",ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  --step-hero: clamp(2.6rem, 1.9rem + 3.2vw, 4.4rem);
+  --step-h2:   clamp(1.5rem, 1.2rem + 1.3vw, 2.2rem);
+  --step-body: clamp(1rem, 0.97rem + 0.18vw, 1.12rem);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:var(--body); font-size:var(--step-body); line-height:1.6;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+/* faint film grain over the cream — tactile depth, no WebGL, offline data-URI */
+.grain{
+  position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.5;
+  mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+}
+.wrap{position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:0 clamp(1rem,4vw,2.5rem)}
+
+/* ── masthead: editorial, left-aligned, lime hairline — NOT a gradient hero ── */
+.masthead{padding:clamp(2rem,5vw,3.4rem) 0 1.4rem; border-bottom:1px solid var(--border)}
+.kicker{font-family:var(--mono); font-size:.78rem; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--lime-600); margin:0 0 .7rem}
+.masthead h1{font-family:var(--display); font-weight:600; font-size:var(--step-hero); line-height:1.02;
+  letter-spacing:-0.015em; margin:0; max-width:16ch; color:var(--purple-700)}
+.masthead h1 em{font-style:italic; color:var(--ink)}
+.spine{margin:1rem 0 0; font-family:var(--display); font-style:italic; font-size:1.15rem; color:var(--ink-soft)}
+.spine::before{content:""; display:inline-block; width:2.2rem; height:3px; background:var(--lime-500);
+  vertical-align:middle; margin-right:.7rem; border-radius:2px}
+
+/* ── asymmetric layout: a specimen rail + the field-guide page ── */
+.layout{display:grid; grid-template-columns:minmax(0,15rem) minmax(0,1fr); gap:clamp(1.4rem,3vw,3rem);
+  align-items:start; padding:clamp(1.6rem,4vw,2.6rem) 0 4rem}
+@media (max-width:760px){.layout{grid-template-columns:1fr}}
+
+.rail h2{font-family:var(--mono); font-size:.74rem; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--ink-soft); margin:.2rem 0 1rem}
+.rail ol{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:.5rem}
+.specimen{width:100%; text-align:left; cursor:pointer; background:var(--paper);
+  border:1px solid var(--border); border-left:3px solid transparent; border-radius:var(--r-md);
+  padding:.7rem .85rem; font:inherit; color:var(--ink); box-shadow:var(--shadow-sm);
+  transition:border-color .18s cubic-bezier(.16,1,.3,1), transform .18s cubic-bezier(.16,1,.3,1)}
+.specimen:hover{transform:translateX(2px); border-left-color:var(--lime-500)}
+.specimen[aria-current="true"]{border-left-color:var(--purple-700); background:var(--purple-100)}
+.specimen .name{display:block; font-weight:600; font-size:.96rem}
+.specimen .verdict{display:block; font-family:var(--mono); font-size:.76rem; color:var(--ink-soft); margin-top:.15rem}
+.specimen[aria-current="true"] .verdict{color:var(--purple-600)}
+.arc-note{margin-top:1.1rem; font-size:.82rem; color:var(--ink-soft); line-height:1.5}
+
+/* ── focus states: real, visible, lime ring (WCAG 2.2 2.4.13) ── */
+:where(button,a,[tabindex],summary):focus-visible{outline:2.5px solid var(--lime-500); outline-offset:3px;
+  border-radius:var(--r-sm)}
+
+/* ── the field-guide page ── */
+.page{min-width:0}
+.page-head{display:flex; gap:1.2rem; align-items:flex-start; flex-wrap:wrap; margin-bottom:1.3rem}
+.shot{width:128px; height:128px; object-fit:cover; border-radius:var(--r-md); border:1px solid var(--border);
+  box-shadow:var(--shadow); background:var(--cream-2); flex:none}
+.page-head .meta{min-width:12rem; flex:1}
+.page-head h2{font-family:var(--display); font-weight:600; font-size:var(--step-h2); line-height:1.08;
+  margin:.1rem 0 .35rem; color:var(--ink)}
+.tags{display:flex; flex-wrap:wrap; gap:.4rem; margin-top:.5rem}
+.tag{font-family:var(--mono); font-size:.72rem; padding:.2rem .55rem; border-radius:100px;
+  background:var(--cream-2); border:1px solid var(--border); color:var(--ink-soft)}
+.tag.path{background:var(--purple-100); border-color:transparent; color:var(--purple-700)}
+
+/* ── the purple "Can it Run AI?" card — the centerpiece ── */
+.verdict-card{background:var(--purple-700); color:var(--cream); border-radius:var(--r-lg);
+  padding:clamp(1.3rem,3vw,2rem); box-shadow:var(--shadow); margin:0 0 1.8rem; position:relative; overflow:hidden}
+.verdict-card .q{font-family:var(--mono); font-size:.8rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--lime-200); margin:0 0 .5rem}
+.verdict-card .answer{font-family:var(--display); font-weight:600; line-height:1; margin:0;
+  font-size:clamp(2.6rem,1.7rem+4vw,4.6rem); letter-spacing:-0.02em}
+.verdict-card .unit{display:block; font-family:var(--body); font-weight:500; font-size:1rem;
+  color:oklch(0.92 0.05 305); margin-top:.55rem; letter-spacing:.01em}
+.verdict-card.never .answer{color:var(--lime-500)}
+.stat-grid{display:flex; flex-wrap:wrap; gap:.6rem; margin-top:1.3rem}
+.stat{background:oklch(0.26 0.14 305); border-radius:var(--r-md); padding:.6rem .8rem; min-width:8rem; flex:1}
+.stat .k{font-family:var(--mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--lime-200); display:block}
+.stat .v{font-size:1.15rem; font-weight:600; margin-top:.15rem; display:block}
+
+/* ── rendered field-guide article ── */
+.article{background:var(--paper); border:1px solid var(--border); border-radius:var(--r-lg);
+  padding:clamp(1.3rem,3vw,2.2rem); box-shadow:var(--shadow-sm)}
+.article h1{display:none}
+.article h2{font-family:var(--display); font-size:1.5rem; margin:.2rem 0 .3rem; color:var(--ink)}
+.article h3{font-family:var(--body); font-weight:700; font-size:.82rem; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--lime-600); margin:1.7rem 0 .5rem}
+.article p{margin:.7rem 0}
+.article strong{color:var(--purple-700)}
+.article em{color:var(--ink-soft)}
+.article blockquote{margin:1rem 0; padding:.7rem 1.1rem; border-left:4px solid var(--lime-500);
+  background:var(--lime-200); border-radius:0 var(--r-md) var(--r-md) 0; font-size:1.1rem}
+.article blockquote strong{color:var(--purple-700)}
+.article table{border-collapse:collapse; margin:1rem 0; font-size:.96rem}
+.article td,.article th{border:1px solid var(--border); padding:.4rem .85rem; text-align:left}
+.article th{background:var(--cream-2)}
+.article pre{background:var(--purple-950); color:oklch(0.9 0.03 135); border-radius:var(--r-md);
+  padding:1rem 1.1rem; overflow-x:auto; font-family:var(--mono); font-size:.86rem; line-height:1.5}
+.article ul{margin:.6rem 0; padding-left:1.3rem}
+.article hr{border:none; border-top:1px solid var(--border); margin:1.4rem 0}
+
+/* ── "open the potato ledger" trace accordion ── */
+.ledger{margin-top:1.6rem; border:1px solid var(--border); border-radius:var(--r-lg);
+  background:var(--paper); box-shadow:var(--shadow-sm); overflow:hidden}
+.ledger>summary{cursor:pointer; list-style:none; padding:.95rem 1.2rem; font-weight:600;
+  display:flex; align-items:center; gap:.6rem; user-select:none}
+.ledger>summary::-webkit-details-marker{display:none}
+.ledger>summary .chev{margin-left:auto; transition:transform .2s ease; color:var(--ink-soft)}
+.ledger[open]>summary .chev{transform:rotate(90deg)}
+.ledger>summary .pill{font-family:var(--mono); font-size:.72rem; background:var(--lime-500);
+  color:var(--ink); padding:.15rem .5rem; border-radius:100px}
+.ledger-body{padding:.4rem 1.2rem 1.1rem}
+.step{display:grid; grid-template-columns:auto 1fr auto; gap:.7rem; align-items:baseline;
+  padding:.55rem 0; border-top:1px dashed var(--border)}
+.step:first-child{border-top:none}
+.step .agent{font-weight:600}
+.step .detail{color:var(--ink-soft); font-size:.92rem; min-width:0; word-break:break-word}
+.step .model{font-family:var(--mono); font-size:.72rem; padding:.12rem .5rem; border-radius:100px;
+  background:var(--cream-2); border:1px solid var(--border); color:var(--ink-soft); white-space:nowrap}
+.step .model.deterministic{background:var(--purple-100); color:var(--purple-700); border-color:transparent}
+
+footer{border-top:1px solid var(--border); padding:1.6rem 0 3rem; color:var(--ink-soft); font-size:.86rem}
+footer code{font-family:var(--mono); background:var(--cream-2); padding:.1rem .4rem; border-radius:var(--r-sm)}
+
+@media (prefers-reduced-motion: reduce){*{transition:none !important; scroll-behavior:auto !important}}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<div class="wrap">
+  <header class="masthead">
+    <p class="kicker">The Real Cat AI Labs · 100 Ways to Power AI</p>
+    <h1>The Antique Infernal&nbsp;Engine<em>.</em></h1>
+    <p class="spine">The humor is decorative. The math is structural.</p>
+  </header>
+
+  <main class="layout">
+    <aside class="rail">
+      <h2>The Specimens</h2>
+      <ol id="case-list"><li style="color:var(--ink-soft);font-size:.85rem">loading…</li></ol>
+      <p class="arc-note">Each antique, asked the least efficient question in history: <em>could it run AI?</em> Answered with real physics.</p>
+    </aside>
+    <section class="page" id="page" aria-live="polite"></section>
+  </main>
+
+  <footer>
+    <p>Fixture-backed &amp; offline by design — every number here came from <code>power_calc.py</code>, frozen before the writer was allowed to be funny. Open the ledger to see which agent (and which model) did what.</p>
+  </footer>
+</div>
+<script src="/static/main.js"></script>
+</body>
+</html>

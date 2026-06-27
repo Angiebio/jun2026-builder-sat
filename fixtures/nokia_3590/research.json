@@ -1,0 +1,15 @@
+{
+  "artifact_family": "Nokia DCT4-platform GSM mobile phone (ARM7TDMI)",
+  "era": "~2002 (Nokia 3590; AT&T/Cingular, FCC-approved April 2002)",
+  "mechanism": "Nokia DCT4 baseband with an ARM7TDMI MCU core (~26 MHz core, 52 MHz memory interface) and ~4.5 Mbit internal SRAM. A general-purpose silicon microprocessor, orders of magnitude faster than the TI-82's Z80.",
+  "historical_notes": [
+    {"claim": "Nokia DCT4 phones use an ARM7TDMI MCU core with a 52 MHz memory interface.", "source": "DCT4 platform -- lpcwiki.miraheze.org/wiki/DCT4_platform"},
+    {"claim": "The Nokia 3590 is a monochrome AT&T/Cingular candybar GSM phone, FCC-approved April 2002.", "source": "Nokia 3590 -- phonescoop.com"}
+  ],
+  "usable_assumptions": [
+    {"parameter": "ops_per_second", "value": 23000000.0, "confidence": "estimate -- ARM7TDMI ~26 MHz * ~0.9 MIPS/MHz (~23 MIPS)"},
+    {"parameter": "watts", "value": 0.3, "confidence": "estimate -- idle-on digital core+screen; a call spikes ~1-2 W into the RF amplifier"},
+    {"parameter": "internal_sram_bits", "value": 4700000.0, "confidence": "approx -- ~4.5 Mbit internal UPP SRAM"},
+    {"parameter": "clock_hz", "value": 26000000.0, "confidence": "estimate -- ~26 MHz MCU core; 52 MHz memory interface is the cited figure"}
+  ]
+}

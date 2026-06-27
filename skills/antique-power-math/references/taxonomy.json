@@ -1,0 +1,22 @@
+{
+  "power_paths": [
+    "galvanic_dc",
+    "rotational_mechanical_power",
+    "steam_rotational_power",
+    "human_mechanical_power"
+  ],
+  "compute_paths": [
+    "punched_card_parallel_binary",
+    "mechanical_decimal_compute",
+    "electromagnetic_switching",
+    "silicon_microprocessor_compute"
+  ],
+  "unsupported_paths": [
+    "optical_or_measurement_only",
+    "decorative_or_unknown"
+  ],
+  "notes": {
+    "silicon_microprocessor_compute": "Added for real build-day fixtures such as TI-82 and Nokia candybar phones. These are stored-program computers, not decorative artifacts.",
+    "punched_card_parallel_binary": "Use only when an effective ops/sec assumption is available. Passive cards alone store information but do not compute."
+  }
+}

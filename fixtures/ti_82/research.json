@@ -1,0 +1,15 @@
+{
+  "artifact_family": "Texas Instruments Z80 graphing calculator (TI-82)",
+  "era": "introduced 1993",
+  "mechanism": "Zilog Z80 8-bit microprocessor at 6 MHz with 32 KB RAM and 128 KB ROM. A general-purpose stored-program computer -- it genuinely executes arbitrary instructions, just very slowly by modern standards.",
+  "historical_notes": [
+    {"claim": "The TI-82 uses a Zilog Z80 CPU at 6 MHz with 32 KB RAM (28,734 bytes user-accessible).", "source": "TI-82 -- en.wikipedia.org/wiki/TI-82"},
+    {"claim": "Measured active current for the Z80 TI family is ~5-16 mA at ~6 V (peak ~30 mA).", "source": "WikiTI -- wikiti.brandonw.net (83Plus Power Usage)"}
+  ],
+  "usable_assumptions": [
+    {"parameter": "ops_per_second", "value": 600000.0, "confidence": "estimate -- Z80 6 MHz / ~10 cycles per instruction (~0.6 MIPS)"},
+    {"parameter": "watts", "value": 0.1, "confidence": "estimate -- 16 mA * 6 V active draw"},
+    {"parameter": "ram_bytes", "value": 32768.0, "confidence": "exact"},
+    {"parameter": "clock_hz", "value": 6000000.0, "confidence": "exact -- Zilog Z80 @ 6 MHz"}
+  ]
+}

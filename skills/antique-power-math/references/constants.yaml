@@ -1,0 +1,47 @@
+# Antique Infernal Engine constants.
+# The "AI Hello" target is a playful demo benchmark, not a universal AI benchmark.
+
+ai_hello_watts: 30
+potato_watts: 0.0001
+cyclist_watts: 100
+ai_hello_ops: 14000000000
+seconds_per_year: 31557600
+
+artifacts:
+  rapid_calculator_pinwheel:
+    display_name: "Rapid Calculator (Odhner/Brunsviga pinwheel class)"
+    watts: 7.0
+    watts_range: [5.0, 10.0]
+    ops_per_second: 1.0
+    ops_per_second_realistic_multiply: 0.1
+    data_bits: 60
+    year: 1950
+    taxonomy: mechanical_decimal_compute
+
+  ti_82:
+    display_name: "Texas Instruments TI-82"
+    watts: 0.10
+    watts_range: [0.011, 0.18]
+    ops_per_second: 600000
+    ops_per_second_range: [300000, 1500000]
+    data_bits: 262144
+    year: 1993
+    taxonomy: silicon_microprocessor_compute
+
+  nokia_3590:
+    display_name: "Nokia 3590 or 3595 candybar phone"
+    watts: 0.30
+    watts_range: [0.1, 2.0]
+    ops_per_second: 23000000
+    ops_per_second_range: [12000000, 23000000]
+    data_bits: 4700000
+    year: 2002
+    taxonomy: silicon_microprocessor_compute
+
+  punched_cards_80col:
+    display_name: "IBM 80-column punched cards"
+    watts: 0.0
+    ops_per_second: 0.0
+    data_bits: 960
+    year: 1965
+    taxonomy: punched_card_parallel_binary

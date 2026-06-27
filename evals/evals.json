@@ -1,0 +1,96 @@
+{
+  "benchmark": "antique-infernal-engine",
+  "description": "With-skill (deterministic power_calc) vs no-skill (granite4:micro guesses the math). The headline result is math_exact: the skill matches the calculator 3/3; granite-alone does not.",
+  "ai_hello_ops": 14000000000,
+  "ai_hello_watts": 30,
+  "baseline": {
+    "mode": "no-skill",
+    "model": "granite4:micro",
+    "expectation": "granite alone proposes ops/watts with NO power_calc; expected to FAIL math_exact (numbers drift run-to-run and rarely land the exact value). The with/without delta on math_exact is the ADLC money shot."
+  },
+  "compare_fields": ["path", "mode", "units_for_ai_hello", "potatoes_equivalent", "cyclists_equivalent", "time_seconds", "time_years", "can_evaluate"],
+  "_assertion_spec": {
+    "article_contains": "case-INSENSITIVE substring match against runs/<case>/article.md. The page header capitalization VARIES across artifacts (ti_82 renders 'Can it run AI?', punched_cards renders 'Can It Run AI?') -> always match lowercased.",
+    "math_exact": "load runs/<case>/math.json; every field in compare_fields must equal expected_math exactly (tolerance 0; the -1.0 sentinel must match). calculation_log + input_* are NOT compared (robust to log wording).",
+    "qc_pass": "runs/<case>/qc.json: field 'pass' (alias 'passed') is true.",
+    "skills_loaded_min": "count of DISTINCT skills recorded across runs/<case>/trace.json steps[].skills; must be >= value. The current orchestrator logs skills per step (antique-power-math on the accountant step, trcl-field-guide-writer on the page_goblin step) -> 2. Needs a fresh run from the current orchestrator; stale run dirs may lack the skills field (ti_82's checked-in trace does).",
+    "trace_contains_model": "case-insensitive substring match across all step.model values in runs/<case>/trace.json. DEPENDENCY: passes only when the granite classify+QC layer is in the eval path. The pure-deterministic floor trace shows model 'fixture'/'deterministic' and will NOT contain 'granite' until Flame1's LLM layer is wired (see scratchpad)."
+  },
+  "cases": [
+    {
+      "id": "pinwheel",
+      "fixture": "pinwheel",
+      "artifact": "Rapid Calculator (Odhner/Brunsviga pinwheel class)",
+      "input": { "path": "mechanical_decimal_compute", "value": 1.0, "unit": "ops_per_second" },
+      "expected_math": {
+        "path": "mechanical_decimal_compute",
+        "mode": "compute",
+        "units_for_ai_hello": 0.0,
+        "potatoes_equivalent": 0.0,
+        "cyclists_equivalent": 0.0,
+        "time_seconds": 14000000000.0,
+        "time_years": 443.6332294,
+        "can_evaluate": true
+      },
+      "assertions": [
+        { "type": "article_contains", "value": "can it run ai?" },
+        { "type": "article_contains", "value": "potato" },
+        { "type": "article_contains", "value": "cyclist" },
+        { "type": "math_exact" },
+        { "type": "qc_pass" },
+        { "type": "skills_valid_min", "value": 2 },
+        { "type": "trace_contains_model", "value": "granite" }
+      ]
+    },
+    {
+      "id": "ti_82",
+      "fixture": "ti_82",
+      "artifact": "Texas Instruments TI-82 (Zilog Z80 @ 6 MHz)",
+      "input": { "path": "silicon_microprocessor_compute", "value": 600000.0, "unit": "ops_per_second" },
+      "expected_math": {
+        "path": "silicon_microprocessor_compute",
+        "mode": "compute",
+        "units_for_ai_hello": 0.0,
+        "potatoes_equivalent": 0.0,
+        "cyclists_equivalent": 0.0,
+        "time_seconds": 23333.3333,
+        "time_years": 0.00073939,
+        "can_evaluate": true
+      },
+      "assertions": [
+        { "type": "article_contains", "value": "can it run ai?" },
+        { "type": "article_contains", "value": "potato" },
+        { "type": "article_contains", "value": "cyclist" },
+        { "type": "math_exact" },
+        { "type": "qc_pass" },
+        { "type": "skills_valid_min", "value": 2 },
+        { "type": "trace_contains_model", "value": "granite" }
+      ]
+    },
+    {
+      "id": "punched_cards",
+      "fixture": "punched_cards",
+      "artifact": "IBM 80-column punched cards (FORTRAN deck)",
+      "input": { "path": "punched_card_parallel_binary", "value": 0.0, "unit": "ops_per_second" },
+      "expected_math": {
+        "path": "punched_card_parallel_binary",
+        "mode": "compute",
+        "units_for_ai_hello": 0.0,
+        "potatoes_equivalent": 0.0,
+        "cyclists_equivalent": 0.0,
+        "time_seconds": -1.0,
+        "time_years": -1.0,
+        "can_evaluate": false
+      },
+      "assertions": [
+        { "type": "article_contains", "value": "can it run ai?" },
+        { "type": "article_contains", "value": "potato" },
+        { "type": "article_contains", "value": "cyclist" },
+        { "type": "math_exact" },
+        { "type": "qc_pass" },
+        { "type": "skills_valid_min", "value": 2 },
+        { "type": "trace_contains_model", "value": "granite" }
+      ]
+    }
+  ]
+}
