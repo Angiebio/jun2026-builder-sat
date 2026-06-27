@@ -88,12 +88,12 @@ def _read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def _run_with_skill(case: str) -> dict[str, Any]:
+def _run_with_skill(case: str, profile: str = "floor") -> dict[str, Any]:
     sys.path.insert(0, str(ROOT))
     import orchestrator  # noqa: PLC0415
 
     run_id = f"eval_with_skill_{case}"
-    article = orchestrator.run_infernal_engine(case, run_id=run_id)
+    article = orchestrator.run_infernal_engine(case, run_id=run_id, live=(profile == "live"))
     run_dir = RUNS / run_id
     return {
         "run_id": run_id,
@@ -233,12 +233,12 @@ def _skills_from_trace(trace: dict[str, Any]) -> set[str]:
 def _live_receipts_present(trace: dict[str, Any]) -> bool:
     for step in trace.get("steps", []):
         model = str(step.get("model", "")).lower()
-        if model in {"fixture", "deterministic"}:
+        if "fixture" in model or "deterministic" in model:
             continue
         if "latency_ms" not in step and "duration_ms" not in step:
             return False
     return any(
-        str(step.get("model", "")).lower() not in {"fixture", "deterministic"}
+        "fixture" not in str(step.get("model", "")).lower() and "deterministic" not in str(step.get("model", "")).lower()
         for step in trace.get("steps", [])
     )
 
@@ -283,7 +283,7 @@ def run(cases: list[str], no_skill_only: bool = False, profile: str = "floor") -
         with_assertions: dict[str, bool] = {}
         with_passed = with_total = 0
         if not no_skill_only:
-            with_skill = _run_with_skill(case)
+            with_skill = _run_with_skill(case, profile=profile)
             with_assertions = _assert_with_skill(case, with_skill, profile=profile)
             with_passed, with_total = _score(with_assertions)
             with_skill_total[0] += with_passed

@@ -91,6 +91,31 @@
         { "type": "skills_loaded_min", "value": 2 },
         { "type": "trace_contains_model", "value": "granite", "profile": "live" }
       ]
+    },
+    {
+      "id": "nokia_3590",
+      "fixture": "nokia_3590",
+      "artifact": "Nokia 3590/3595 candybar phone (ARM7TDMI, ~26 MHz)",
+      "input": { "path": "silicon_microprocessor_compute", "value": 23000000.0, "unit": "ops_per_second" },
+      "expected_math": {
+        "path": "silicon_microprocessor_compute",
+        "mode": "compute",
+        "units_for_ai_hello": 0.0,
+        "potatoes_equivalent": 0.0,
+        "cyclists_equivalent": 0.0,
+        "time_seconds": 608.69565217,
+        "time_years": 1.929e-05,
+        "can_evaluate": true
+      },
+      "assertions": [
+        { "type": "article_contains", "value": "can it run ai?" },
+        { "type": "article_contains", "value": "potato" },
+        { "type": "article_contains", "value": "cyclist" },
+        { "type": "math_exact" },
+        { "type": "qc_pass" },
+        { "type": "skills_loaded_min", "value": 2 },
+        { "type": "trace_contains_model", "value": "granite", "profile": "live" }
+      ]
     }
   ]
 }
