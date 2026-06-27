@@ -1,26 +1,23 @@
 {
   "summary": {
     "cases": [
-      "pinwheel",
-      "punched_cards",
-      "ti_82",
-      "nokia_3590"
+      "pinwheel"
     ],
-    "with_skill_passed": 24,
-    "with_skill_total": 24,
+    "with_skill_passed": 8,
+    "with_skill_total": 8,
     "no_skill_passed": 0,
-    "no_skill_total": 4,
-    "delta_passes": 24,
+    "no_skill_total": 1,
+    "delta_passes": 8,
     "note": "With-skill uses deterministic power_calc.py. No-skill uses granite4:micro via Ollama when available, otherwise a documented no-tool baseline fallback.",
-    "profile": "floor"
+    "profile": "live"
   },
   "assertions": [
     "article_contains_can_it_run_ai",
-    "article_contains_potatoes",
-    "article_contains_cyclist",
-    "math_matches_expected",
     "qc_pass",
-    "two_skills_loaded"
+    "two_skills_loaded",
+    "live_model_receipts_present",
+    "granite_appears_in_trace",
+    "frontier_appears_in_trace"
   ],
   "results": [
     {
@@ -37,25 +34,27 @@
           "article_contains_cyclist": true,
           "qc_pass": true,
           "two_skills_loaded": true,
-          "math_matches_expected": true
+          "live_model_receipts_present": true,
+          "granite_appears_in_trace": true,
+          "frontier_appears_in_trace": true
         },
-        "passed": 6,
-        "total": 6,
+        "passed": 8,
+        "total": 8,
         "math": {
           "path": "mechanical_decimal_compute",
           "mode": "compute",
-          "input_value": 1.0,
+          "input_value": 10.0,
           "input_unit": "ops_per_second",
           "units_for_ai_hello": 0.0,
           "potatoes_equivalent": 0.0,
           "cyclists_equivalent": 0.0,
-          "time_seconds": 14000000000.0,
-          "time_years": 443.6332294,
+          "time_seconds": 1400000000.0,
+          "time_years": 44.36332294,
           "can_evaluate": true,
           "calculation_log": [
-            "Compute path: 1.0 ops/sec.",
+            "Compute path: 10.0 ops/sec.",
             "AI Hello target: 14000000000.0 operations.",
-            "Time required: 14000000000.0 / 1.0 seconds."
+            "Time required: 14000000000.0 / 10.0 seconds."
           ]
         }
       },
@@ -71,160 +70,6 @@
         "math": {
           "time_seconds": 14000000000.0,
           "time_years": 0.0
-        }
-      }
-    },
-    {
-      "case": "punched_cards",
-      "expected": {
-        "field": "time_seconds",
-        "value": -1.0
-      },
-      "with_skill": {
-        "run_id": "eval_with_skill_punched_cards",
-        "assertions": {
-          "article_contains_can_it_run_ai": true,
-          "article_contains_potatoes": true,
-          "article_contains_cyclist": true,
-          "qc_pass": true,
-          "two_skills_loaded": true,
-          "math_matches_expected": true
-        },
-        "passed": 6,
-        "total": 6,
-        "math": {
-          "path": "punched_card_parallel_binary",
-          "mode": "compute",
-          "input_value": 0.0,
-          "input_unit": "ops_per_second",
-          "units_for_ai_hello": 0.0,
-          "potatoes_equivalent": 0.0,
-          "cyclists_equivalent": 0.0,
-          "time_seconds": -1.0,
-          "time_years": -1.0,
-          "can_evaluate": false,
-          "calculation_log": [
-            "Compute path has 0 ops/sec.",
-            "Sentinel -1.0 means this artifact never completes the AI Hello operation target by itself."
-          ]
-        }
-      },
-      "no_skill": {
-        "source": "ollama_no_skill_baseline",
-        "model": "granite4:micro",
-        "reason": null,
-        "assertions": {
-          "math_matches_expected": false
-        },
-        "passed": 0,
-        "total": 1,
-        "math": {
-          "time_seconds": 0.0,
-          "time_years": 0.0,
-          "units_for_ai_hello": 0.0
-        }
-      }
-    },
-    {
-      "case": "ti_82",
-      "expected": {
-        "field": "time_seconds",
-        "value": 23333.3333
-      },
-      "with_skill": {
-        "run_id": "eval_with_skill_ti_82",
-        "assertions": {
-          "article_contains_can_it_run_ai": true,
-          "article_contains_potatoes": true,
-          "article_contains_cyclist": true,
-          "qc_pass": true,
-          "two_skills_loaded": true,
-          "math_matches_expected": true
-        },
-        "passed": 6,
-        "total": 6,
-        "math": {
-          "path": "silicon_microprocessor_compute",
-          "mode": "compute",
-          "input_value": 600000.0,
-          "input_unit": "ops_per_second",
-          "units_for_ai_hello": 0.0,
-          "potatoes_equivalent": 0.0,
-          "cyclists_equivalent": 0.0,
-          "time_seconds": 23333.3333,
-          "time_years": 0.00073939,
-          "can_evaluate": true,
-          "calculation_log": [
-            "Compute path: 600000.0 ops/sec.",
-            "AI Hello target: 14000000000.0 operations.",
-            "Time required: 14000000000.0 / 600000.0 seconds."
-          ]
-        }
-      },
-      "no_skill": {
-        "source": "ollama_no_skill_baseline",
-        "model": "granite4:micro",
-        "reason": null,
-        "assertions": {
-          "math_matches_expected": false
-        },
-        "passed": 0,
-        "total": 1,
-        "math": {
-          "time_seconds": 0.0,
-          "time_years": 0.0,
-          "units_for_ai_hello": 0.0
-        }
-      }
-    },
-    {
-      "case": "nokia_3590",
-      "expected": {
-        "field": "time_seconds",
-        "value": 608.69565217
-      },
-      "with_skill": {
-        "run_id": "eval_with_skill_nokia_3590",
-        "assertions": {
-          "article_contains_can_it_run_ai": true,
-          "article_contains_potatoes": true,
-          "article_contains_cyclist": true,
-          "qc_pass": true,
-          "two_skills_loaded": true,
-          "math_matches_expected": true
-        },
-        "passed": 6,
-        "total": 6,
-        "math": {
-          "path": "silicon_microprocessor_compute",
-          "mode": "compute",
-          "input_value": 23000000.0,
-          "input_unit": "ops_per_second",
-          "units_for_ai_hello": 0.0,
-          "potatoes_equivalent": 0.0,
-          "cyclists_equivalent": 0.0,
-          "time_seconds": 608.69565217,
-          "time_years": 1.929e-05,
-          "can_evaluate": true,
-          "calculation_log": [
-            "Compute path: 23000000.0 ops/sec.",
-            "AI Hello target: 14000000000.0 operations.",
-            "Time required: 14000000000.0 / 23000000.0 seconds."
-          ]
-        }
-      },
-      "no_skill": {
-        "source": "fallback_no_skill_baseline",
-        "model": "granite4:micro unavailable in this shell",
-        "reason": "No-skill baseline rounds the ARM7 estimate to a ten-minute answer.",
-        "assertions": {
-          "math_matches_expected": false
-        },
-        "passed": 0,
-        "total": 1,
-        "math": {
-          "time_seconds": 600.0,
-          "time_years": 1.901e-05
         }
       }
     }

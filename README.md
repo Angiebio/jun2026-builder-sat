@@ -203,7 +203,7 @@ Both pass `agentskills validate` against the [agentskills.io](https://agentskill
 
 ## Does the skill earn its place?
 
-Measured by `evals/run.py` over all four fixtures, **with-skill vs a real `granite4:micro`-alone baseline** — `profile: floor`, reproduced fresh from this repo:
+Measured by `evals/run.py` over all four fixtures, **with-skill vs a no-skill baseline** — `profile: floor`, reproduced fresh from this repo. *(The no-skill runner uses `granite4:micro`-alone when Ollama is reachable, else a documented no-tool baseline; either way a model without the calculator cannot reproduce the exact math.)*
 
 | | passed |
 |---|---|
@@ -220,7 +220,7 @@ Assertions are **script-checked, not LLM-judged**: the page must contain *"Can i
 | Nokia 3590 | `silicon_microprocessor_compute` | 23 000 000 ops/s → **608.70 s** (~10 min) |
 | Punched cards | `punched_card_parallel_binary` | 0 ops/s → **`-1.0` sentinel** = *"never computes"* |
 
-The skill doesn't make the prose nicer — it makes the math *true.* Granite alone confuses *seconds* with *years* and treats a passive punch-card deck as instant memory; the deterministic calculator is exact and reproducible. A skill that can't beat its `--no-skill` baseline isn't earning its place — so we measure it.
+The skill doesn't make the prose nicer — it makes the math *true.* A model *without* the calculator confuses *seconds* with *years* and treats a passive punch-card deck as instant memory; the deterministic calculator is exact and reproducible. A skill that can't beat its `--no-skill` baseline isn't earning its place — so we measure it.
 
 ---
 

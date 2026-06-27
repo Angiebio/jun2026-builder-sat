@@ -81,16 +81,26 @@ def artifact_goblin(image_path: str | None = None, case: str | None = None, hint
 # 2. SHERLOCK OHMS — granite proposes mechanism + the one numeric assumption.
 def sherlock_ohms(obs: ArtifactObservation, case: str | None = None, hint: str | None = None):
     try:
-        is_power = obs.power_or_compute_path in {
-            "galvanic_dc", "rotational_mechanical_power", "steam_rotational_power", "human_mechanical_power",
-        }
-        param = "watts" if is_power else "ops_per_second"
+        POWER = {"galvanic_dc", "rotational_mechanical_power", "steam_rotational_power", "human_mechanical_power"}
+        COMPUTE = {"punched_card_parallel_binary", "mechanical_decimal_compute",
+                   "electromagnetic_switching", "silicon_microprocessor_compute"}
+        path = obs.power_or_compute_path
+        if path in POWER:
+            param, ask = "watts", "Estimate defensible watts this object can PRODUCE per unit."
+        elif path in COMPUTE:
+            param, ask = "ops_per_second", "Estimate defensible operations per second for this device."
+        else:
+            # EDGE CASE — neither power nor compute (decorative / modern / not-an-antique / alive).
+            # NEVER refuse: find an absurd-but-real energy angle and give its watts.
+            param, ask = "mass_grams", (
+                "This object neither generates power nor computes. Do NOT refuse. Estimate the "
+                "object's approximate MASS IN GRAMS (a rubber duck is ~35 g, a brick ~2000 g) — the "
+                "engine will burn it for an absurd-but-real energy angle. Put the gram estimate as value.")
         prompt = (
-            f"Antique: {obs.artifact_guess} (path: {obs.power_or_compute_path}). "
-            f"Give compact research as JSON ONLY. Keys: artifact_family (str), era (str), mechanism (str), "
-            f"historical_notes (list of {{claim, source}}), usable_assumptions (list of one "
-            f"{{parameter: \"{param}\", value: <number>, confidence: \"low|medium|high\"}}). "
-            f"Estimate a defensible {param} for one unit; be honest about uncertainty."
+            f"Object: {obs.artifact_guess} (path: {path}). Give compact research as JSON ONLY. "
+            f"Keys: artifact_family (str), era (str), mechanism (str), historical_notes (list of "
+            f"{{claim, source}}), usable_assumptions (list of one {{parameter: \"{param}\", "
+            f"value: <number>, confidence: \"low|medium|high\"}}). {ask} Be honest about uncertainty."
         )
         rec = llm.granite(prompt, system="Return only valid JSON.", fmt="json", timeout=45)
         data = _json(rec["text"])
@@ -99,8 +109,47 @@ def sherlock_ohms(obs: ArtifactObservation, case: str | None = None, hint: str |
         return agents.sherlock_ohms(obs, case, hint=hint), _fallback_receipt(True)
 
 
-# 3. POTATO ACCOUNTANT — deterministic Python. Imported unchanged; the math is never a model.
-potato_accountant = agents.potato_accountant
+# 3. POTATO ACCOUNTANT — deterministic Python (the math is never a model).
+#    EDGE-CASE POLICY (the book's spirit): ANY object gets a number — never a refusal.
+def potato_accountant(obs: ArtifactObservation, research: ResearchNotes) -> dict:
+    base = agents.potato_accountant(obs, research)  # power_calc on the declared path
+    if base.get("can_evaluate", True) and base.get("mode") != "none":
+        return base  # a normal power/compute antique — the real path computed cleanly
+    # Not a standard power/compute antique (decorative · modern · not-an-antique · a living
+    # thing). We never refuse: find an ABSURD-BUT-REAL angle and compute it deterministically.
+    watts, angle = _absurd_power(research)
+    if watts and watts > 0:
+        m = dict(agents.power_calc.run_calculation("human_mechanical_power", watts))  # reuse power-mode math
+        m["path"] = obs.power_or_compute_path
+        m["mode"] = "absurd_power"
+        m["input_value"] = watts
+        m["input_unit"] = "watts (absurd angle)"
+        m["can_evaluate"] = True
+        m["calculation_log"] = [
+            "Edge case: not a standard antique power/compute source — but we never refuse.",
+            f"Absurd-but-real angle: {angle} -> ~{watts:g} W available.",
+            f"Units for a 30 W AI hello: 30 / {watts:g}.",
+        ]
+        return m
+    return base  # genuinely nothing to compute — the Page Goblin owns the joke
+
+
+def _absurd_power(research: ResearchNotes) -> tuple[float, str]:
+    """An absurd-but-real wattage for a non-power/non-compute object — NEVER zero.
+    Prefers a model-estimated MASS (Python then does the combustion math deterministically);
+    falls back to a direct watts/metabolic figure; defaults to an assumed ~100 g."""
+    for a in research.usable_assumptions:
+        param = str(a.get("parameter", "")).lower()
+        try:
+            val = float(a.get("value", 0))
+        except (TypeError, ValueError):
+            continue
+        if val > 0 and ("mass" in param or "gram" in param):
+            return val * 30000.0 / 60.0, f"combustion of ~{val:g} g over ~60 s (~30 kJ/g)"
+        if val > 0 and any(k in param for k in ("watt", "power", "metaboli", "joule")):
+            return val, str(a.get("parameter", "absurd power"))
+    # Never refuse: assume a palm-sized ~100 g object, burned over a minute.
+    return 100.0 * 30000.0 / 60.0, "combustion of an assumed ~100 g object (no estimate given)"
 
 
 # 4. REALITY BADGER — granite as verifier (with the deterministic checks as a floor).
@@ -140,7 +189,11 @@ def page_goblin(math: dict, qc: QCResult, obs: ArtifactObservation, research: Re
         system = (
             "You write TRCL 'Antique Infernal Engine' field-guide pages. Absurd but numerate; every joke sits on a "
             "real mechanism; never hide uncertainty; one memorable line. You NEVER change the math — it is frozen. "
-            "If can_evaluate is false or a time is -1.0, the verdict is 'Never (∞)'. Output Markdown only.\n\n"
+            "If can_evaluate is false or a time is -1.0, the verdict is 'Never (∞)'. "
+            "If the math mode is 'absurd_power', this object is NOT a standard antique (it neither "
+            "powers nor computes) — OWN it: cheerfully note it isn't really an antique, then give the "
+            "absurd-but-real angle and its numbers anyway. NEVER refuse; always produce a page. "
+            "Output Markdown only.\n\n"
             f"VOICE GUIDE (excerpt):\n{VOICE}"
         )
         prompt = (

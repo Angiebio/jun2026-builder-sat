@@ -60,12 +60,14 @@ def _display(case: str) -> str:
     return case
 
 
+LIVE_DEMO_RUNS = ("IMG_4523",)  # curated live run(s) for the demo rail (Claude saw this photo)
+
+
 def _ordered_cases() -> list[str]:
-    """Curated demo arc first, then any LIVE/ad-hoc runs (excludes eval_* scratch)."""
+    """Curated demo arc, then the curated LIVE run — excludes eval_*/other agents' QC scratch."""
     base = [c for c in ARC_ORDER if (RUNS / c / "math.json").exists()]
-    extras = sorted(d.name for d in RUNS.iterdir()
-                    if d.is_dir() and (d / "math.json").exists() and _is_live_extra(d.name)) if RUNS.exists() else []
-    return base + extras
+    live = [c for c in LIVE_DEMO_RUNS if (RUNS / c / "math.json").exists()]
+    return base + live
 
 
 @app.get("/", response_class=HTMLResponse)
