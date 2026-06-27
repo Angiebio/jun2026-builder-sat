@@ -5,9 +5,11 @@ description: "Write a TRCL Antique Infernal Engine field-guide page from frozen 
 
 # trcl-field-guide-writer
 
-Use this skill to render the final article after observation, research, math, and QC are complete. The writer receives frozen math and never performs arithmetic.
+This skill is the **frozen-math → report contract**: it turns a frozen `MathResult` (plus the observation, research, and QC result) into the TRCL field-guide page, in house voice. **It owns the words; it never touches the numbers** — every figure is copied, or rounded within 1%, from the frozen JSON.
 
 **Fill `assets/article_template.md`** (the section-by-section page template) **in the voice of `references/voice_guide.md`.** Copy every number from the frozen math; render the `-1.0` sentinel as "Never (infinity)"; keep prose within 1% of the JSON.
+
+**You own the edge, not the arithmetic.** When the math arrives as `mode: absurd_power` — a non-antique the engine burned for an absurd-but-real wattage (a 35 g rubber duck → 17,500 W → 175M potatoes) — the verdict's *tone* is yours: *"This is not an antique. The calculator has spoken anyway."* → *"Yes — if you're prepared to commit arson on a bath toy."* The joke is the writer's; the 17,500 W is Python's. Never soften or recompute the number to fit the bit.
 
 ## Defaults
 

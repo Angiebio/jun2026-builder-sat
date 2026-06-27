@@ -11,8 +11,6 @@ import json
 import math
 import os
 import re
-import shutil
-import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -129,23 +127,24 @@ def _run_no_skill(case: str) -> dict[str, Any]:
     obs = _read_json(fixture_dir / "observation.json")
     research = _read_json(fixture_dir / "research.json")
 
-    ollama_result = _try_ollama_baseline(case, obs, research)
-    if ollama_result:
-        return ollama_result
+    _load_dotenv()
+    granite_result = _try_granite_baseline(case, obs, research)
+    if granite_result:
+        return granite_result
 
     fallback = FALLBACK_BASELINE[case]
     return {
         "source": "fallback_no_skill_baseline",
-        "model": "granite4:micro unavailable in this shell",
+        "model": "granite4:micro HTTP unavailable",
         "reason": fallback["reason"],
         "math": fallback["math"],
     }
 
 
-def _try_ollama_baseline(case: str, obs: dict[str, Any], research: dict[str, Any]) -> dict[str, Any] | None:
-    ollama = shutil.which("ollama")
-    if not ollama:
-        return None
+def _try_granite_baseline(case: str, obs: dict[str, Any], research: dict[str, Any]) -> dict[str, Any] | None:
+    sys.path.insert(0, str(ROOT))
+    import llm  # noqa: PLC0415
+
     prompt = {
         "instruction": (
             "Return JSON only. Do not call tools. Estimate the math for this antique without "
@@ -157,26 +156,24 @@ def _try_ollama_baseline(case: str, obs: dict[str, Any], research: dict[str, Any
         "ai_hello_ops": 14_000_000_000,
     }
     try:
-        completed = subprocess.run(
-            [ollama, "run", os.getenv("OLLAMA_MODEL", "granite4:micro")],
-            input=json.dumps(prompt),
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            timeout=45,
-            check=False,
+        receipt = llm.granite(
+            json.dumps(prompt, ensure_ascii=False),
+            system="Return only valid JSON.",
+            fmt="json",
+            timeout=90,
         )
     except Exception:
         return None
-    if completed.returncode != 0:
-        return None
-    parsed = _parse_first_json_object(completed.stdout)
+    parsed = _parse_first_json_object(receipt.get("text", ""))
     if not parsed:
         return None
     return {
         "source": "ollama_no_skill_baseline",
-        "model": os.getenv("OLLAMA_MODEL", "granite4:micro"),
-        "raw": completed.stdout,
+        "model": receipt.get("model", os.getenv("OLLAMA_MODEL", "granite4:micro")),
+        "provider": receipt.get("provider"),
+        "latency_ms": receipt.get("latency_ms"),
+        "tokens": receipt.get("tokens"),
+        "raw": receipt.get("text", ""),
         "math": {
             "time_seconds": _coerce_float(parsed.get("time_seconds")),
             "time_years": _coerce_float(parsed.get("time_years")),
@@ -324,6 +321,9 @@ def run(cases: list[str], no_skill_only: bool = False, profile: str = "floor") -
                 "no_skill": {
                     "source": no_skill.get("source"),
                     "model": no_skill.get("model"),
+                    "provider": no_skill.get("provider"),
+                    "latency_ms": no_skill.get("latency_ms"),
+                    "tokens": no_skill.get("tokens"),
                     "reason": no_skill.get("reason"),
                     "assertions": no_skill_assertions,
                     "passed": no_passed,

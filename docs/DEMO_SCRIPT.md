@@ -14,6 +14,7 @@
 - [ ] Backup video queued in a tab (insurance).
 - [ ] `--live` only if you're going for it: `.env` has `ANTHROPIC_API_KEY`; one warm-up run done. **A live run takes ~85s** (granite is honest, not fast, on this laptop) → **start it at 0:00 and let it cook through the fixture arc** (see the live track below). **If anything about live is shaky, skip it — the fixtures are the demo.**
 - [ ] One real antique in hand for the live upload (optional flex).
+- [ ] A random **non-antique** within reach for the "hand me anything" encore — a duck, a mug, a shoe. The never-refuse edge case is the biggest gasp.
 
 ---
 
@@ -76,6 +77,12 @@ machines get cleverer, but never actually possible. Every number below is real, 
 > real models, same exact math." *(reveal the live field-guide page)*
 > **If it's not done yet:** "Still thinking — that's granite verifying on a laptop, in real
 > time" → show the warm-up result. **Never wait on stage.**
+
+**(Encore — "hand me anything," the never-refuse novelty)** *(the strongest live flex: upload a NON-antique)*
+> "It never refuses — that's the whole thesis. Hand it a rubber duck —" *(upload)* "— it
+> estimates the mass, **burns it in Python** at 30 kilojoules a gram, and reports **17,500 watts,
+> 175 million potatoes**: *'Yes — if you're prepared to commit arson on a bath toy.'* Absurd
+> object, real combustion, exact math. The model guessed the mass; Python did everything else."
 
 **2:30 — Close.**
 > "Absurd premise, rigorous answer. **The humor is decorative. The math is structural.**" 🥔🔥

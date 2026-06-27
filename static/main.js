@@ -1,9 +1,13 @@
 /* Antique Infernal Engine — single-page UI logic. Vanilla JS, fully offline.
-   Renders the field-guide page + the purple "Can it Run AI?" card + the
-   "open the potato ledger" trace accordion from runs/<case>/ artifacts. */
+   Renders the field-guide page + the purple "Can it Run AI?" panel + the
+   "open the potato ledger" trace from runs/<case>/ artifacts — and lets the
+   visitor UPLOAD a photo to watch the live pipeline (Claude + granite) run. */
 "use strict";
 
 const $ = (sel, root = document) => root.querySelector(sel);
+let CASES = [];        // last /cases payload
+let CURRENT = null;    // currently-open case id
+let BUSY = false;      // a live upload is in flight — lock the rail
 
 /* ── humanize seconds → the verdict number + unit (the demo arc punchline) ── */
 function humanize(seconds, canEval) {
@@ -21,6 +25,21 @@ function humanize(seconds, canEval) {
   return { big: String(rounded), unit, never: false };
 }
 
+/* the headline verdict — power/absurd_power artifacts have no compute time, so
+   render their watts (and how many AI-hellos that's worth) instead of "0 seconds" */
+function verdict(m) {
+  if ((m.mode === "power" || m.mode === "absurd_power") && m.can_evaluate && m.input_value > 0) {
+    const w = m.input_value;
+    const mult = m.units_for_ai_hello > 0 ? Math.round(1 / m.units_for_ai_hello) : 0;
+    return {
+      big: w >= 1000 ? Math.round(w).toLocaleString() : (Math.round(w * 100) / 100),
+      unit: mult > 0 ? `watts — ~${mult.toLocaleString()}× one AI hello's appetite` : "watts available",
+      never: false,
+    };
+  }
+  return humanize(m.time_seconds, m.can_evaluate);
+}
+
 function fmtNum(n) {
   if (n == null) return "—";
   if (n === -1) return "∞";
@@ -31,7 +50,7 @@ function fmtNum(n) {
       the writer template uses: headings, **bold**, *italic*, `code`, > quote,
       tables, fenced ``` blocks, - lists, hr, paragraphs. HTML-escaped first. ── */
 function esc(s) {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 function inline(s) {
   return esc(s)
@@ -82,9 +101,9 @@ function mdToHtml(md) {
   return out.join("\n");
 }
 
-/* ── render the verdict card from math.json ── */
+/* ── render the verdict panel from math.json ── */
 function verdictCard(math, obs) {
-  const h = humanize(math.time_seconds, math.can_evaluate);
+  const h = verdict(math);
   const stats = [];
   if (math.input_value != null) stats.push(["input", `${fmtNum(math.input_value)} ${math.input_unit || ""}`.trim()]);
   if (math.units_for_ai_hello && math.units_for_ai_hello > 0) stats.push(["units for AI hello", fmtNum(math.units_for_ai_hello)]);
@@ -136,11 +155,11 @@ function ledger(trace) {
 }
 
 /* ── render the whole page for one case ── */
-function renderPage(data) {
+function renderPage(data, scroll = true) {
   const obs = data.observation || {};
   const conf = obs.confidence != null ? ` · confidence ${Math.round(obs.confidence * 100)}%` : "";
   const path = (data.math && data.math.path) || obs.power_or_compute_path || "";
-  const shot = data.has_image ? `<img class="shot" src="/image/${encodeURIComponent(data.case)}" alt="${esc(data.display)}">` : "";
+  const shot = data.has_image ? `<img class="shot" src="/image/${encodeURIComponent(data.case)}?t=${Date.now()}" alt="${esc(data.display)}">` : "";
   $("#page").innerHTML = `
     <div class="page-head">
       ${shot}
@@ -156,43 +175,183 @@ function renderPage(data) {
     ${verdictCard(data.math || {}, obs)}
     <div class="article">${mdToHtml(data.article_md)}</div>
     ${ledger(data.trace || {})}`;
-  $("#page").scrollIntoView({ block: "nearest" });
+  if (scroll) $("#page").scrollIntoView({ block: "nearest" });
 }
 
-async function loadCase(c, btn) {
-  document.querySelectorAll(".specimen").forEach(b => b.setAttribute("aria-current", String(b === btn)));
+/* ── the live-compute loader: a scanning instrument while the agents actually run ── */
+const LIVE_STEPS = [
+  ["01", "artifact_goblin", "Claude opens its eyes on your photo…"],
+  ["02", "sherlock_ohms", "granite4:micro researches the mechanism…"],
+  ["03", "potato_accountant", "Python computes the physics (frozen, deterministic)…"],
+  ["04", "reality_badger", "granite audits the units — can it be bullied into AI?"],
+  ["05", "page_goblin", "Claude writes the verdict over the frozen math…"],
+];
+let LOADER_TIMER = null, ELAPSED_TIMER = null;
+function renderLoading(name) {
+  const steps = LIVE_STEPS.map(([n, agent, detail]) =>
+    `<li data-step="${n}"><span class="mark">${n}</span><span><b>${esc(agent)}</b> — ${esc(detail)}</span></li>`).join("");
+  $("#page").innerHTML = `
+    <div class="live-loader">
+      <div class="ll-bar"></div>
+      <div class="ll-body">
+        <p class="ll-head">Running the live pipeline… <span id="ll-elapsed" style="font-family:var(--mono);font-size:.82rem;font-weight:400;color:var(--ink-soft)">0s</span></p>
+        <p class="ll-sub">Looking at <strong>${esc(name)}</strong>. Real models, real receipts — typically ~60–90 seconds. The math stays deterministic.</p>
+        <ul class="ll-steps">${steps}</ul>
+      </div>
+    </div>`;
+  const items = [...document.querySelectorAll(".ll-steps li")];
+  let idx = 0;
+  const advance = () => {
+    items.forEach((li, k) => {
+      li.classList.toggle("done", k < idx);
+      li.classList.toggle("active", k === idx);
+    });
+    if (idx < items.length - 1) idx++;   // hold on the last step until the real result lands
+  };
+  advance();
+  LOADER_TIMER = setInterval(advance, 14000);  // ~14s/step ≈ the real cadence; the last step waits
+  // The one number that's ALWAYS honest regardless of step pacing: real wall-clock.
+  let secs = 0;
+  const el = $("#ll-elapsed");
+  ELAPSED_TIMER = setInterval(() => { secs += 1; if (el) el.textContent = `${secs}s`; }, 1000);
+}
+function stopLoading() {
+  if (LOADER_TIMER) { clearInterval(LOADER_TIMER); LOADER_TIMER = null; }
+  if (ELAPSED_TIMER) { clearInterval(ELAPSED_TIMER); ELAPSED_TIMER = null; }
+}
+
+/* ── load + render one case ── */
+async function loadCase(c, scroll = true) {
+  if (BUSY) return;
+  CURRENT = c;
+  syncActive();
   try {
     const r = await fetch(`/run/${encodeURIComponent(c)}`);
     if (!r.ok) throw new Error(`run ${c}: ${r.status}`);
-    renderPage(await r.json());
+    renderPage(await r.json(), scroll);
   } catch (e) {
     $("#page").innerHTML = `<div class="article"><p><strong>Could not load ${esc(c)}.</strong> ${esc(e.message)}</p></div>`;
   }
 }
+function syncActive() {
+  document.querySelectorAll(".specimen").forEach(b => b.setAttribute("aria-current", String(b.dataset.case === CURRENT)));
+}
 
-async function init() {
-  let cases;
-  try {
-    const r = await fetch("/cases");
-    cases = (await r.json()).cases || [];
-  } catch (e) {
-    $("#case-list").innerHTML = `<li style="color:#b82105">Could not reach the server (${esc(e.message)}).</li>`;
+/* ── render the specimen rail (numbered tiles; uploads get a delete target) ── */
+function renderRail() {
+  const list = $("#case-list");
+  $("#case-count").textContent = CASES.length ? `(${CASES.length})` : "";
+  list.innerHTML = CASES.map((c, i) => {
+    const v = verdict(c);
+    const vtxt = v.never ? "Never · ∞" : `${v.big} ${v.unit.split(" ")[0]}`;
+    const idx = String(i + 1).padStart(2, "0");
+    const liveCls = c.live ? " is-live" : "";
+    const del = c.deletable
+      ? `<button class="del" type="button" data-del="${esc(c.case)}" title="Remove this specimen" aria-label="Remove ${esc(c.display)}">✕</button>`
+      : "";
+    return `<li class="spec-row">
+      <button class="specimen${liveCls}" type="button" data-case="${esc(c.case)}" aria-current="${c.case === CURRENT}">
+        <span class="idx">${idx}</span>
+        <span class="lbl"><span class="name">${esc(c.display)}</span><span class="verdict">${esc(vtxt)}</span></span>
+      </button>${del}</li>`;
+  }).join("");
+}
+
+async function refreshCases() {
+  const r = await fetch("/cases");
+  CASES = (await r.json()).cases || [];
+  renderRail();
+}
+
+/* ── upload a photo → run the live pipeline → show the result ── */
+async function handleUpload(file) {
+  if (!file || BUSY) return;
+  const name = file.name || "";
+  // iPhone default is HEIC — Claude vision can't read it and most browsers won't
+  // render it. Catch it here for instant, actionable feedback (no slow round-trip).
+  if (/\.(heic|heif)$/i.test(name) || /image\/(heic|heif)/i.test(file.type)) {
+    alert("iPhone HEIC photos can't run live vision yet.\n\nExport/share the photo as JPEG first — or set iPhone → Settings → Camera → Formats → “Most Compatible” — then upload.");
     return;
   }
-  const list = $("#case-list");
-  list.innerHTML = "";
-  cases.forEach((c, idx) => {
-    const v = humanize(c.time_seconds, c.can_evaluate);
-    const li = document.createElement("li");
-    const btn = document.createElement("button");
-    btn.className = "specimen";
-    btn.type = "button";
-    btn.innerHTML = `<span class="name">${esc(c.display)}</span><span class="verdict">${esc(v.never ? "Never · ∞" : v.big + " " + v.unit.split(" ")[0])}</span>`;
-    btn.addEventListener("click", () => loadCase(c.case, btn));
-    li.appendChild(btn);
-    list.appendChild(li);
-    if (idx === 0) loadCase(c.case, btn); // open on the first beat of the arc (∞)
+  if (file.type && !/^image\//.test(file.type)) { alert("Please choose an image file (JPG / PNG)."); return; }
+  BUSY = true;
+  $("#upload-btn").style.pointerEvents = "none";
+  renderLoading(file.name);
+  try {
+    const r = await fetch(`/upload?filename=${encodeURIComponent(file.name)}`, {
+      method: "POST",
+      headers: { "Content-Type": file.type || "application/octet-stream" },
+      body: file,
+    });
+    stopLoading();
+    if (!r.ok) {
+      const msg = await r.text().catch(() => r.status);
+      throw new Error(typeof msg === "string" ? msg.slice(0, 300) : `HTTP ${r.status}`);
+    }
+    const { case: newCase } = await r.json();
+    BUSY = false;
+    await refreshCases();
+    await loadCase(newCase);
+  } catch (e) {
+    stopLoading();
+    BUSY = false;
+    $("#page").innerHTML = `<div class="article"><p><strong>Live run failed.</strong> ${esc(e.message)}</p>
+      <p>The deterministic demo still works — pick a curated specimen on the left. (Live needs Ollama running and an Anthropic key in <code>.env</code>.)</p></div>`;
+  } finally {
+    $("#upload-btn").style.pointerEvents = "";
+  }
+}
+
+/* ── delete an uploaded specimen ── */
+async function handleDelete(caseId) {
+  if (BUSY) return;
+  const c = CASES.find(x => x.case === caseId);
+  if (!confirm(`Remove “${c ? c.display : caseId}” and its run?`)) return;
+  try {
+    const r = await fetch(`/case/${encodeURIComponent(caseId)}`, { method: "DELETE" });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    await refreshCases();
+    if (CURRENT === caseId) {
+      if (CASES.length) await loadCase(CASES[0].case);
+      else $("#page").innerHTML = "";
+    } else {
+      syncActive();
+    }
+  } catch (e) {
+    alert(`Could not delete: ${e.message}`);
+  }
+}
+
+async function init() {
+  // rail interactions via delegation (survives re-renders)
+  $("#case-list").addEventListener("click", (e) => {
+    const del = e.target.closest(".del");
+    if (del) { handleDelete(del.dataset.del); return; }
+    const spec = e.target.closest(".specimen");
+    if (spec) loadCase(spec.dataset.case);
   });
+
+  // upload: file picker + drag-and-drop onto the uploader
+  $("#file-input").addEventListener("change", (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (f) handleUpload(f);
+    e.target.value = "";   // allow re-uploading the same file
+  });
+  const dz = $("#uploader"), btn = $("#upload-btn");
+  ["dragenter", "dragover"].forEach(ev => dz.addEventListener(ev, (e) => { e.preventDefault(); btn.classList.add("dragover"); }));
+  ["dragleave", "drop"].forEach(ev => dz.addEventListener(ev, (e) => { e.preventDefault(); btn.classList.remove("dragover"); }));
+  dz.addEventListener("drop", (e) => {
+    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) handleUpload(f);
+  });
+
+  try {
+    await refreshCases();
+  } catch (e) {
+    $("#case-list").innerHTML = `<li class="spec-row" style="padding:.7rem;color:#b82105">Could not reach the server (${esc(e.message)}).</li>`;
+    return;
+  }
+  if (CASES.length) loadCase(CASES[0].case, false); // open on the first beat of the arc (∞) — keep the masthead in view
 }
 
 document.addEventListener("DOMContentLoaded", init);

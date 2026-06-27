@@ -36,3 +36,5 @@ desktop.ini
 
 # local demo inputs — kept local, NOT part of the judged deliverable
 test images/
+# visitor uploads from the web UI — local only, never judged
+uploads/

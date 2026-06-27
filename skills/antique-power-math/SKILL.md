@@ -66,3 +66,28 @@ Return the frozen calculator JSON:
   "calculation_log": []
 }
 ```
+
+## Edge cases — never refuse (the book's spirit)
+This skill assesses **any object** — antique or not — and **never refuses**. When the thing in
+front of it neither produces power nor computes (a rubber duck, a houseplant, a USB stick, a
+person), the engine finds an **absurd-but-real energy angle** and runs the *same* exact math.
+
+**The division of labor holds — the model never multiplies:**
+- The model estimates **one number**: the object's **mass in grams** (rubber duck ≈ 35 g,
+  brick ≈ 2000 g). If the object is alive, a **metabolic wattage** (~100 W for a human) instead.
+- **Python does the combustion**, deterministically: `watts = mass_g × 30000 J/g ÷ 60 s`
+  (~30 kJ/g of chemical energy released over ~60 s). A 35 g duck → **17,500 W**.
+- Those watts run the **same power-path math**: `units_for_ai_hello = 30 / W` ·
+  `potatoes = W / 0.0001` · `cyclists = W / 100`. The duck → **175,000,000 potatoes** (and 175 cyclists).
+- Output `mode` = **`absurd_power`**, `input_unit` = `"watts (absurd angle)"`, and the
+  `calculation_log` names the angle (*"combustion of ~35 g over ~60 s (~30 kJ/g)"*).
+
+**Fallbacks (still never refuse):** a direct watts / metabolic / joule estimate is used as-is;
+if the model offers nothing, assume a palm-sized **~100 g** object burned over a minute.
+
+**The writer owns the tone, not the number** (`trcl-field-guide-writer`): *"This is not an
+antique. The calculator has spoken anyway."* → *"Yes — if you're prepared to commit arson on a
+bath toy."* The joke is the writer's; the 17,500 W is Python's.
+
+*(The novel-object path runs on `--live`, where a model proposes the mass; the combustion and
+equivalence math are deterministic Python in every profile.)*
