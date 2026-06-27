@@ -34,7 +34,12 @@ Thumbs.db
 desktop.ini
 *.tmp
 
-# local demo inputs — kept local, NOT part of the judged deliverable
-test images/
+# local demo inputs — ignore by default, but SHIP the 4 curated antique photos so
+# the web UI shows thumbnails on a fresh clone (all other local inputs stay private)
+test images/*
+!test images/IMG_4523.JPG
+!test images/IMG_4524.JPG
+!test images/IMG_4526.JPG
+!test images/IMG_4527.JPG
 # visitor uploads from the web UI — local only, never judged
 uploads/
