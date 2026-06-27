@@ -1,4 +1,4 @@
-"""FastAPI single-page UI for the Antique Infernal Engine.
+"""FastAPI single-page UI for the Antiques Inference Engine.
 
 Serves the field-guide page and the pre-computed runs/<case>/ artifacts, AND
 lets a visitor UPLOAD a photo to run the live pipeline (Claude + granite) in the
@@ -52,10 +52,21 @@ IMAGE_MAP = {
 LIVE_DEMO_RUNS = ("IMG_4523", "rubber_duck")  # curated live runs for the demo rail (Claude saw these)
 PROTECTED = set(ARC_ORDER) | set(LIVE_DEMO_RUNS)  # the demo itself — never deletable via the UI
 
+# Non-antiques never refuse — and they never get a boring label. One cheeky framing
+# per object (picked stably by the case id so it doesn't flicker between requests).
+_NOT_ANTIQUE = (
+    "Not an antique (we checked)",
+    "Aggressively not an antique",
+    "Legally distinct from an antique",
+    "Not an antique, bold of you",
+    "Suspiciously not an antique",
+    "Not an antique, but we're invested",
+)
+
 ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 MAX_UPLOAD = 12_000_000  # 12 MB — a phone photo, not a payload
 
-app = FastAPI(title="Antique Infernal Engine")
+app = FastAPI(title="Antiques Inference Engine")
 
 
 # ── helpers ────────────────────────────────────────────────────────────────
@@ -85,7 +96,13 @@ def _display(case: str) -> str:
         return DISPLAY[case]
     obs = RUNS / case / "observation.json"
     if obs.exists():
-        g = _read_json(obs).get("artifact_guess", "").split(" - ")[0].split(",")[0].strip()
+        o = _read_json(obs)
+        g = o.get("artifact_guess", "").split(" - ")[0].split(",")[0].strip()
+        if g.lower().startswith("unidentified"):
+            g = ""
+        if o.get("power_or_compute_path") == "decorative_or_unknown":
+            phrase = _NOT_ANTIQUE[sum(map(ord, case)) % len(_NOT_ANTIQUE)]
+            return f"🔴 {phrase}: {g[:30]}" if g else f"🔴 {phrase}: mystery object"
         return f"🔴 LIVE: {g[:30]}" if g else f"🔴 LIVE: {case}"
     return case
 

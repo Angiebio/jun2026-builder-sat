@@ -55,13 +55,19 @@ def _fallback_receipt(tried_model: bool) -> dict:
 def artifact_goblin(image_path: str | None = None, case: str | None = None, hint: str | None = None):
     if image_path:
         try:
-            system = "You are an antique appraiser's trained eye. Return ONLY a JSON object, no prose."
+            system = ("You are a sharp-eyed appraiser who identifies ANY object in a photo, antique "
+                      "or not. You ALWAYS return exactly one JSON object and never plain prose.")
             prompt = (
-                "Identify this antique and the single power/compute path that best fits it.\n"
+                "Identify the object in this photo and the single power/compute path that best fits it.\n"
+                "It may NOT be an antique. It could be a modern gadget, a toy, food (a potato!), or anything. "
+                "Either way, NAME WHAT IT ACTUALLY IS (for example 'russet potato' or 'rubber duck'). "
+                "NEVER answer 'unidentified', give your best concrete name even at low confidence.\n"
+                "If it is neither a power source nor a computer, set `power_or_compute_path` to 'decorative_or_unknown'.\n"
                 f"`power_or_compute_path` MUST be exactly one of: {PATHS}.\n"
-                "JSON keys: artifact_guess (str), confidence (0..1 float), visible_features (list[str]), "
-                "alternate_guesses (list[str]), power_or_compute_path (str), questions_for_research (list[str])."
-                + (f"\nThe QC step bounced this back — reconsider given: {hint}" if hint else "")
+                "Return ONLY a JSON object (no prose) with keys: artifact_guess (str, the real name), "
+                "confidence (0..1 float), visible_features (list[str]), alternate_guesses (list[str]), "
+                "power_or_compute_path (str), questions_for_research (list[str])."
+                + (f"\nThe QC step bounced this back, reconsider given: {hint}" if hint else "")
             )
             rec = llm.claude(prompt, system=system, image_path=image_path, max_tokens=700)
             data = _json(rec["text"])
@@ -72,7 +78,7 @@ def artifact_goblin(image_path: str | None = None, case: str | None = None, hint
         except Exception as e:  # noqa: BLE001 — any failure degrades to a safe path
             print(f"[live artifact_goblin -> fallback] {type(e).__name__}: {e}", file=sys.stderr)
             if not case:  # fresh photo, no fixture to fall back to — minimal honest obs
-                return ArtifactObservation(artifact_guess="unidentified antique", confidence=0.3,
+                return ArtifactObservation(artifact_guess="mystery object", confidence=0.3,
                                            power_or_compute_path="decorative_or_unknown"), _fallback_receipt(True)
             return agents.artifact_goblin(case, hint=hint), _fallback_receipt(True)
     return agents.artifact_goblin(case, hint=hint), _fallback_receipt(False)
@@ -187,7 +193,7 @@ def page_goblin(math: dict, qc: QCResult, obs: ArtifactObservation, research: Re
             "mode", "input_value", "input_unit", "units_for_ai_hello", "potatoes_equivalent",
             "cyclists_equivalent", "time_seconds", "time_years", "can_evaluate", "calculation_log")}
         system = (
-            "You write TRCL 'Antique Infernal Engine' field-guide pages. Absurd but numerate; every joke sits on a "
+            "You write TRCL 'Antiques Inference Engine' field-guide pages. Absurd but numerate; every joke sits on a "
             "real mechanism; never hide uncertainty; one memorable line. You NEVER change the math — it is frozen. "
             "If can_evaluate is false or a time is -1.0, the verdict is 'Never (∞)'. "
             "If the math mode is 'absurd_power', this object is NOT a standard antique (it neither "
